@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/layout_main_goods"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layout_menu_for_goods"
+
+        android:orientation="vertical"
+
+        >
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:contentScrim="@color/white"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:statusBarScrim="@color/white"
+                app:toolbarId="@id/toolbar_goods"
+                android:padding="0dp"
+                android:fitsSystemWindows="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    android:padding="0dp">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/pager_for_image_goods"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:fitsSystemWindows="true"
+                        app:layout_constraintDimensionRatio="5:4"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:padding="0dp"
+                        />
+                    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+                        android:id="@+id/indicator_for_pager_goods"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="@id/pager_for_image_goods"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginBottom="5dp"
+                        app:dotsColor="@color/white"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar_goods"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@android:color/transparent"
+                    android:elevation="4dp"
+                    app:layout_collapseMode="pin"
+
+                    />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="true"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/layout_default_padding_start_end"
+            android:paddingEnd="@dimen/layout_default_padding_start_end">
+
+            <ImageView
+                android:id="@+id/img_seller_goods"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/user_default" />
+
+            <TextView
+                android:id="@+id/txt_name_seller_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@id/img_seller_goods"
+                app:layout_constraintStart_toEndOf="@id/img_seller_goods"
+                app:layout_constraintTop_toTopOf="@id/img_seller_goods"
+                tools:text="봉칼라슝" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider_for_goods"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/img_seller_goods" />
+
+            <TextView
+                android:id="@+id/txt_state_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/txt_name_goods"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_for_goods"
+                tools:text="판매완료" />
+
+            <TextView
+                android:id="@+id/txt_name_goods"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:maxLines="2"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/txt_state_goods"
+                app:layout_constraintTop_toTopOf="@id/divider_for_goods"
+                tools:text="에어팟프로2에어팟프로2에어팟프로2에어팟프로2에어팟프로2에어팟프로2에어팟프로2에어팟프로2" />
+
+            <TextView
+                android:id="@+id/txt_category_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_name_goods"
+                tools:text="디지털기기"
+                />
+
+            <TextView
+                android:id="@+id/txt_created_at_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/txt_category_goods"
+                app:layout_constraintTop_toTopOf="@id/txt_category_goods"
+                app:layout_constraintBaseline_toBaselineOf="@id/txt_category_goods"
+                tools:text="2022-03-12" />
+
+            <TextView
+                android:id="@+id/txt_price_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_category_goods"
+                tools:text="27,000원"
+
+                />
+
+            <TextView
+                android:id="@+id/txt_details_goods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="200dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_price_goods"
+                tools:text="간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇ간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇ간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇㅇ
+간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇ간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇ간어라어란ㅇ러망ㅁ너랑ㄴ러ㅏㅇ너랑너랑너랑너랑너랑너란ㅇㅇ" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_menu_for_goods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/white"
+        android:paddingStart="@dimen/layout_default_padding_start_end"
+        android:paddingEnd="@dimen/layout_default_padding_start_end"
+        android:elevation="8dp"
+
+        >
+        <LinearLayout
+            android:id="@+id/menu_for_customer_goods"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:padding="0dp"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:id="@+id/btn_favorite_goods"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_not_favorite"
+                android:layout_gravity="center_vertical"
+                android:padding="0dp"/>
+            <Button
+                android:id="@+id/btn_chat_goods"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:backgroundTint="@color/white"
+                android:text="@string/str_chat_with_seller"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:padding="0dp"/>
+            <Button
+                android:id="@+id/btn_payment_goods"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/str_payment_goods"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/menu_for_seller_goods"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:padding="0dp"
+            android:visibility="gone"
+            >
+            <Button
+                android:id="@+id/btn_update_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_update"
+                android:text="@string/str_update_goods"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_change_state_goods"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:padding="0dp"
+                />
+            <Button
+                android:id="@+id/btn_change_state_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_change_state"
+                android:text="@string/str_change_state_goods"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_update_goods"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete_goods"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="0dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            <Button
+                android:id="@+id/btn_delete_goods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_delete"
+                android:text="@string/str_delete_goods"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_change_state_goods"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="0dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
