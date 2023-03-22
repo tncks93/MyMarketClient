@@ -63,6 +63,8 @@ public class HomeFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 if(item.getItemId()==R.id.menu_action_search){
                     //검색 Activity Start
+                    Intent intent = new Intent(getContext(),SearchActivity.class);
+                    startActivity(intent);
 
                     return true;
                 }

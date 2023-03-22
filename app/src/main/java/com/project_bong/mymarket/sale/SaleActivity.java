@@ -64,6 +64,8 @@ public class SaleActivity extends AppCompatActivity {
     private RegisterGoodsImageAdapter imageAdapter;
     private ArrayList<String> imagePaths;
 
+    private String price = "";
+
 
     //갤러리 권한
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_IMAGES};
@@ -130,10 +132,6 @@ public class SaleActivity extends AppCompatActivity {
         }
 
     });
-
-    private String price = "";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,7 +225,7 @@ public class SaleActivity extends AppCompatActivity {
 
                     binding.editNameGoodsRegister.setText(goods.getName());
                     binding.editCategoryGoodsRegister.setText(goods.getCategory());
-                    binding.editPriceGoodsRegister.setText(goods.getPrice());
+                    binding.editPriceGoodsRegister.setText(goods.getFormattedPrice());
                     binding.editDetailsGoodsRegister.setText(goods.getDetails());
                 }else{
                     Toast.makeText(getBaseContext(),getString(R.string.failure_on_network),Toast.LENGTH_SHORT).show();
@@ -247,7 +245,6 @@ public class SaleActivity extends AppCompatActivity {
         getWindow().getDecorView().clearFocus();
         String name = binding.editNameGoodsRegister.getText().toString();
         String category = binding.editCategoryGoodsRegister.getText().toString();
-        String price = binding.editPriceGoodsRegister.getText().toString();
         String details = binding.editDetailsGoodsRegister.getText().toString();
 
         if(!isValidatedForm(name,category,price,details)){
@@ -257,7 +254,7 @@ public class SaleActivity extends AppCompatActivity {
         binding.progressGoodsRegister.setVisibility(View.VISIBLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-        Goods goods = new Goods(name,category,price,details);
+        Goods goods = new Goods(name,category,Integer.parseInt(price),details);
         RequestBody goodsBody = RequestBody.create(new Gson().toJson(goods), MediaType.parse("application/json; charset=utf-8"));
         ImageProcessor ip = new ImageProcessor(getBaseContext());
         ArrayList<MultipartBody.Part> imagePartList = ip.getImagePartListFromPaths(imagePaths,"goods");

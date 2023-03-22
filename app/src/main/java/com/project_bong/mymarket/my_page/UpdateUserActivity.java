@@ -1,4 +1,4 @@
-package com.project_bong.mymarket.login;
+package com.project_bong.mymarket.my_page;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -12,6 +12,8 @@ import androidx.core.content.res.ResourcesCompat;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,9 +27,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.gson.JsonObject;
 import com.project_bong.mymarket.R;
-import com.project_bong.mymarket.databinding.ActivitySignUpBinding;
+import com.project_bong.mymarket.databinding.ActivityUpdateUserBinding;
 import com.project_bong.mymarket.dto.LoginUser;
-import com.project_bong.mymarket.main.MainActivity;
+import com.project_bong.mymarket.login.SignUpActivity;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
 import com.project_bong.mymarket.util.ImageProcessor;
@@ -36,10 +38,11 @@ import com.project_bong.mymarket.util.PermissionsGetter;
 import com.project_bong.mymarket.util.Shared;
 
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -48,12 +51,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignUpActivity extends AppCompatActivity {
-    private String phoneNum;
-    private ActivitySignUpBinding binding;
+public class UpdateUserActivity extends AppCompatActivity {
+    private ActivityUpdateUserBinding binding;
+
     private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_IMAGES};
 
-    private boolean isDefaultImage = true;
+    private boolean isDefaultImage = false;
     private String currentImagePath = null;
 
     private ActivityResultLauncher<String[]> requestStoragePermissions = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
@@ -94,7 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
                         }
 
                         currentImagePath = imgPath;
-                        Glide.with(getBaseContext()).load(currentImagePath).circleCrop().into(binding.imgUserProfileSignUp);
+                        Glide.with(getBaseContext()).load(currentImagePath).circleCrop().into(binding.imgUserProfileUpdateUser);
 
                     }
 
@@ -106,99 +109,122 @@ public class SignUpActivity extends AppCompatActivity {
         }
     });
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivitySignUpBinding.inflate(getLayoutInflater());
+        binding = ActivityUpdateUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        phoneNum = getIntent().getStringExtra("phone");
-        Glide.with(getBaseContext()).load(ResourcesCompat.getDrawable(getResources(),R.drawable.user_default,null)).circleCrop().into(binding.imgUserProfileSignUp);
-        binding.txtUserPhoneSignUp.setText(phoneNum);
-        setSupportActionBar(binding.toolbarSignUp.toolbarDefault);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-        binding.toolbarSignUp.toolbarTitle.setText(getString(R.string.str_title_sign_up));
+        setSupportActionBar(binding.toolbarUpdateUser.toolbarDefault);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        binding.toolbarUpdateUser.toolbarTitle.setText(getString(R.string.str_title_update_goods));
 
-
-        //프로필 이미지 수정
-        binding.imgUserProfileSignUp.setOnClickListener(v->{
+        binding.imgUserProfileUpdateUser.setOnClickListener(v->{
             showProfileImageDialog();
         });
+        setUserInfo();
+
+
     }
 
-    private void startSignUp(){
-        binding.progressSignUp.setVisibility(View.VISIBLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    private void setUserInfo(){
+            LoginUser loginUser = LoginUserGetter.getLoginUser();
+            new Thread(()->{
+                try{
+                    URL url = new URL(loginUser.getUserImage());
+                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    ImageProcessor ip = new ImageProcessor(getBaseContext());
+                    String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
+                    String fileName = "user_"+timeStamp;
+                    currentImagePath = ip.saveJPEGFromSingleBitmap(bitmap,fileName);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(getBaseContext()).load(currentImagePath).circleCrop().circleCrop()
+                                    .into(binding.imgUserProfileUpdateUser);
+                        }
+                    });
+
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }).start();
+            binding.txtUserPhoneUpdateUser.setText(loginUser.getPhoneNum());
+            binding.editUserNameUpdateUser.setText(loginUser.getName());
+
+
+    }
+
+    private void saveUserInfo(){
+        String name = binding.editUserNameUpdateUser.getText().toString();
+        if(!isFilledForm(name)){
+            Toast.makeText(getBaseContext(),getString(R.string.str_hint_input_name),Toast.LENGTH_SHORT).show();
+            return;
+        }
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//        binding.progressUpdateUser.setVisibility(View.VISIBLE);
 
         JsonObject userJson = new JsonObject();
-        userJson.addProperty("phone",phoneNum);
-        userJson.addProperty("name",binding.editUserNameSignUp.getText().toString());
-        RequestBody bodyUser = RequestBody.create(userJson.toString(), MediaType.parse("application/json; charset=utf-8"));
+        userJson.addProperty("name",name);
+        RequestBody userBody = RequestBody.create(userJson.toString(), MediaType.parse("application/json; charset=utf-8"));
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
-        Call<String> callSignUp;
+        Call<String> callUpdateUser;
+        if(isDefaultImage){
+            callUpdateUser = retrofit.callUpdateUser(userBody,null);
+        }else{
 
-        if(!isDefaultImage){
             File imageFile = new File(currentImagePath);
-            RequestBody imageBody = RequestBody.create(imageFile,MediaType.parse("image/jpeg"));
+            RequestBody imageBody = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
             String fileName = "user_"+System.currentTimeMillis()+".jpeg";
             MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image",fileName,imageBody);
-
-            callSignUp = retrofit.callSignUp(bodyUser,imagePart);
-        }else{
-            callSignUp = retrofit.callSignUp(bodyUser,null);
+            callUpdateUser = retrofit.callUpdateUser(userBody,imagePart);
         }
 
-        callSignUp.enqueue(new Callback<String>() {
+        callUpdateUser.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if(response.body() != null){
-                    String res = response.body();
-                    if(res.equals("success")){
-                        LoginUserGetter loginUserGetter = new LoginUserGetter(getBaseContext());
-                        loginUserGetter.setOnLoginListener(new LoginUserGetter.OnLoginListener() {
-                            @Override
-                            public void onLogin(LoginUser loginUser) {
-                                if(loginUser == null){
-                                    Toast.makeText(getBaseContext(),getString(R.string.failure_on_network),Toast.LENGTH_SHORT).show();
-                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                                }
-                                Log.d("login","user_phone : "+loginUser.getPhoneNum());
-                                Log.d("login","user_name : "+loginUser.getName());
-                                Log.d("login","user_sess : "+loginUser.getSessId());
-                                Shared shared = new Shared(getBaseContext(),Shared.LOGIN_FILE_NAME);
-                                shared.setSharedString(Shared.LOGIN_KEY,loginUser.getSessId());
-                                RetrofitClientInstance.initiate();
-                                Toast.makeText(getBaseContext(),getString(R.string.str_success_sign_up),Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getBaseContext(), MainActivity.class));
-                                finish();
+                    Log.d("res",response.body());
+                    LoginUserGetter loginUserGetter = new LoginUserGetter(getBaseContext());
+                    loginUserGetter.setOnLoginListener(new LoginUserGetter.OnLoginListener() {
+                        @Override
+                        public void onLogin(LoginUser loginUser) {
+                            Shared shared = new Shared(getBaseContext(),Shared.LOGIN_FILE_NAME);
+                            shared.setSharedString(Shared.LOGIN_KEY,loginUser.getSessId());
+                            setResult(RESULT_OK,new Intent());
+                            finish();
+                        }
 
-                            }
-                            @Override
-                            public void onLoginFailed() {
-                                Toast.makeText(getBaseContext(),getString(R.string.failure_on_network),Toast.LENGTH_SHORT).show();
-                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                            }
-                        });
-
-                        loginUserGetter.callLoginUser(phoneNum,true);
-                    }else{
-                        Log.d("res","response : "+response.body());
-                    }
+                        @Override
+                        public void onLoginFailed() {
+                            finish();
+                        }
+                    });
+                    loginUserGetter.callLoginUser(LoginUserGetter.getLoginUser().getSessId(),false);
                 }
-
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 RetrofitClientInstance.setOnFailure(getBaseContext(),t);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                binding.progressUpdateUser.setVisibility(View.GONE);
             }
         });
+    }
 
+    private boolean isFilledForm(String name){
+        if(name.replaceAll(" ","").equals("")){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private void showProfileImageDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateUserActivity.this);
         builder.setItems(getResources().getStringArray(R.array.str_dialog_for_profile_img), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -211,7 +237,8 @@ public class SignUpActivity extends AppCompatActivity {
                         break;
                     case 1:
                         isDefaultImage = true;
-                        Glide.with(getBaseContext()).load(ResourcesCompat.getDrawable(getResources(),R.drawable.user_default,null)).circleCrop().into(binding.imgUserProfileSignUp);
+                        Glide.with(getBaseContext()).load(ResourcesCompat.getDrawable(getResources(),R.drawable.user_default,null))
+                                .circleCrop().into(binding.imgUserProfileUpdateUser);
                         //기존 이미지 있을 경우 삭제
                         if(currentImagePath!=null){
                             ImageProcessor ip = new ImageProcessor(getBaseContext());
@@ -226,26 +253,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         builder.show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater inflater = new MenuInflater(getBaseContext());
-        inflater.inflate(R.menu.menu_sign_up,menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()== R.id.menu_action_sign_up){
-            //가입하기 버튼
-            if(isFilledForm()){
-                startSignUp();
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void getAlbumImage(){
@@ -275,10 +282,25 @@ public class SignUpActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean isFilledForm(){
-        if(binding.editUserNameSignUp.getText().toString().replace(" ","").equals("")){
-            return false;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = new MenuInflater(getBaseContext());
+        inflater.inflate(R.menu.menu_update_user,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_action_update_user:
+                saveUserInfo();
+                return true;
+            case android.R.id.home:
+                finish();
+                return true;
+
+            default:
+                return false;
         }
-        return true;
     }
 }

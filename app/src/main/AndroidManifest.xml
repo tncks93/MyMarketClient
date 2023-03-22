@@ -9,9 +9,10 @@
         android:name="android.permission.READ_PHONE_STATE"
         android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" /> <!-- 앨범,카메라 사용 위한 권한 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -29,9 +30,19 @@
         android:theme="@style/Theme.MyMarket"
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
-        <activity android:name=".sale.GoodsActivity"
-            android:theme="@style/Theme.Goods"
-            android:exported="false"/>
+        <activity
+            android:name=".home.SearchResultsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".home.SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".my_page.UpdateUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".sale.GoodsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Goods" />
         <activity
             android:name=".sale.SaleActivity"
             android:exported="false" />

@@ -3,6 +3,7 @@ package com.project_bong.mymarket.dto;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,36 +22,36 @@ public class Goods {
 
     @Expose
     @SerializedName("seller")
-    User seller;
+    private User seller;
 
     @SerializedName("name")
-    String name;
+    private String name;
 
     @SerializedName("category")
-    String category;
+    private String category;
 
     @SerializedName("price")
-    String price;
+    private int price;
 
     @SerializedName("details")
-    String details;
+    private String details;
 
     @Expose
     @SerializedName("main_image")
-    String mainImage;
+    private String mainImage;
 
 
     @Expose
     @SerializedName("goods_images")
-    ArrayList<String> goodsImageList;
+    private ArrayList<String> goodsImageList;
 
     @SerializedName("created_at")
-    String createdAt;
+    private String createdAt;
 
     @SerializedName("state")
-    String state;
+    private String state;
 
-    public Goods(String name,String category,String price,String details){
+    public Goods(String name,String category,int price,String details){
         this.name = name;
         this.category = category;
         this.price = price;
@@ -72,8 +73,15 @@ public class Goods {
         return category;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
+    }
+
+    public String getFormattedPrice(){
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(price)+"원";
+
+        return formattedPrice;
     }
 
     public String getDetails() {

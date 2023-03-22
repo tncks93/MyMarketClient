@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appbar_search_results"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:elevation="4dp"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_search_results"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:elevation="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <androidx.appcompat.widget.SearchView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/filled_edit_text"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:iconifiedByDefault="false"
+                app:queryHint="@string/str_hint_search" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/layout_default_padding_start_end"
+            android:paddingEnd="@dimen/layout_default_padding_start_end">
+
+            <Button
+                android:id="@+id/btn_set_category_search_results"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/outlined_edit_text"
+                android:drawableEnd="@drawable/ic_drop_down_filter"
+                android:gravity="start|center_vertical"
+                android:text="카테고리"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                app:backgroundTint="@color/white" />
+
+            <Button
+                android:id="@+id/btn_set_price_search_results"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/outlined_edit_text"
+                android:drawableEnd="@drawable/ic_drop_down_filter"
+                android:gravity="start|center_vertical"
+                android:maxWidth="170dp"
+                android:text="가격"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                app:backgroundTint="@color/white" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/layout_refresh_search_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_search_results"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/layout_default_padding_start_end"
+            android:paddingTop="10dp"
+            android:paddingEnd="@dimen/layout_default_padding_start_end"
+            android:paddingBottom="10dp" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

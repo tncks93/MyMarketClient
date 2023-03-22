@@ -33,6 +33,10 @@ public interface RetrofitInterface {
     Call<String> callSignUp(@Part("user") RequestBody bodyUser, @Part @Nullable MultipartBody.Part image);
 
     @Multipart
+    @POST("my_page/update_user.php")
+    Call<String> callUpdateUser(@Part("user") RequestBody bodyUser, @Part @Nullable MultipartBody.Part image);
+
+    @Multipart
     @POST("goods/save_goods.php")
     Call<Integer> callSaveGoods(@Part("goods") RequestBody bodyGoods, @Part List<MultipartBody.Part> goodsImages,@Part("info") RequestBody bodyInfo);
 
@@ -49,4 +53,8 @@ public interface RetrofitInterface {
     @FormUrlEncoded
     @POST("goods/delete_goods.php")
     Call<String> callDeleteGoods(@Field("goods_id") int goodsId);
+
+    @Multipart
+    @POST("goods/search_goods.php")
+    Call<ArrayList<Goods>> callSearchedGoodsList(@Part("page_idx") int pageIdx,@Part("filter") RequestBody bodyFilter);
 }

@@ -64,7 +64,7 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<GoodsRecyclerAdap
         Goods goods = goodsList.get(position);
         Glide.with(mContext).load(goods.getMainImage()).transform(new CenterCrop(),new RoundedCorners(20)).into(holder.binding.imgItemGoods);
         holder.binding.txtNameItemGoods.setText(goods.getName());
-        holder.binding.txtPriceItemGoods.setText(goods.getPrice());
+        holder.binding.txtPriceItemGoods.setText(goods.getFormattedPrice());
         holder.binding.txtCreatedAtItemGoods.setText(goods.getCreatedAtForUser());
 
         if(goods.getState().equals(Goods.STATE_ON_SAIL)){
