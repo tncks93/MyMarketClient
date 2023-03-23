@@ -73,7 +73,7 @@ public class GoodsActivity extends AppCompatActivity {
                     Glide.with(getBaseContext()).load(goods.getSeller().getUserImage()).centerCrop().circleCrop().into(binding.imgSellerGoods);
                     binding.txtNameSellerGoods.setText(goods.getSeller().getName());
                     binding.txtNameGoods.setText(goods.getName());
-                    binding.txtPriceGoods.setText(goods.getPrice());
+                    binding.txtPriceGoods.setText(goods.getFormattedPrice());
                     binding.txtCreatedAtGoods.setText(goods.getCreatedAtForUser());
                     binding.txtCategoryGoods.setText(goods.getCategory());
                     binding.txtDetailsGoods.setText(goods.getDetails());

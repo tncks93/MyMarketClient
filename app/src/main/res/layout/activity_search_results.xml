@@ -23,17 +23,28 @@
             android:background="@color/white"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:elevation="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            >
 
-            <androidx.appcompat.widget.SearchView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <EditText
+                android:id="@+id/edit_search_search_result"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:background="@drawable/filled_edit_text"
-                android:inputType="text"
-                android:textColor="@color/black"
+                android:drawableStart="@drawable/ic_hint_for_search"
                 android:textSize="14sp"
-                app:iconifiedByDefault="false"
-                app:queryHint="@string/str_hint_search" />
+                android:textColor="@color/black"
+                android:hint="@string/str_hint_search"
+                android:textColorHint="@color/gray_hint"
+                android:inputType="text"
+                android:maxLength="30"
+                android:imeOptions="actionSearch"
+
+                />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -67,10 +78,12 @@
                 android:background="@drawable/outlined_edit_text"
                 android:drawableEnd="@drawable/ic_drop_down_filter"
                 android:gravity="start|center_vertical"
-                android:maxWidth="170dp"
+                android:maxWidth="200dp"
                 android:text="가격"
                 android:textColor="@color/black"
                 android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end"
                 app:backgroundTint="@color/white" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>

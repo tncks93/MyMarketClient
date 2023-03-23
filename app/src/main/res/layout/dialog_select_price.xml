@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_price_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingStart="@dimen/layout_default_padding_start_end"
+    android:paddingEnd="@dimen/layout_default_padding_start_end"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        >
+        <EditText
+            android:id="@+id/edit_min_price_price_dialog"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:inputType="numberDecimal"
+            android:background="@drawable/outlined_edit_text"
+            android:gravity="end"
+            tools:text="0"
+            android:hint="@string/str_min_price_search"
+            android:maxLines="1"
+            android:maxLength="9"
+            android:textSize="15sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="원 이상"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:textSize="14sp"
+            />
+        <EditText
+            android:id="@+id/edit_max_price_price_dialog"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:inputType="numberDecimal"
+            android:background="@drawable/outlined_edit_text"
+            android:gravity="end"
+            tools:text="100000000"
+            android:hint="@string/str_max_price_search"
+            android:maxLines="1"
+            android:maxLength="9"
+            android:textSize="15sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="원 이하"
+            android:layout_marginStart="5dp"
+            android:textSize="14sp"
+            />
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn_set_price_search_filter"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/str_set_condition_search"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+
+
+
+
+</LinearLayout>
+
+<!--    <TextView-->
+<!--    android:id="@+id/txt_price_select_dialog"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_width="300dp"-->
+<!--    android:paddingBottom="10dp"-->
+<!--    android:paddingTop="10dp"-->
+<!--    android:textColor="@color/black"-->
+<!--    tools:text="5000원 이상 100000000원 이하" /><kr.co.prnd.slider.FlexibleStepRangeSlider-->
+<!--    android:id="@+id/slider_price_select_dialog"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_marginBottom="20dp"-->
+<!--    android:layout_width="300dp"-->
+<!--    android:valueFrom="0"-->
+<!--    android:valueTo="100000000"-->
+<!--    app:values="@array/initial_slider_values"-->
+<!--    -->
+<!--        />-->

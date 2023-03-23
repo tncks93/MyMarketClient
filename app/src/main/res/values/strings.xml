@@ -112,6 +112,13 @@
     //검색 strings
     <string name="str_title_search">검색</string>
     <string name="str_hint_search">검색어를 입력해 주세요</string>
+    <string name="str_all_category_search">전체보기</string>
+    <string name="str_set_condition_search">상품보기</string>
+    <string name="str_min_price_search">최소가격</string>
+    <string name="str_max_price_search">최대가격</string>
+    <string name="str_over_min_price_search">최소가격은 최대가격보다 작아야 합니다</string>
+    <string name="str_over_max_price_search">%s원 이하의 상품만 검색할 수 있습니다</string>
+    <string name="str_range_price_search">%s원 이상 $s원 이하</string>
 
 
 </resources>

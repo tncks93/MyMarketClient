@@ -1,6 +1,7 @@
 package com.project_bong.mymarket.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,7 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<GoodsRecyclerAdap
         Goods goods = goodsList.get(position);
         Glide.with(mContext).load(goods.getMainImage()).transform(new CenterCrop(),new RoundedCorners(20)).into(holder.binding.imgItemGoods);
         holder.binding.txtNameItemGoods.setText(goods.getName());
+        holder.binding.txtCategoryItemGoods.setText(goods.getCategory());
         holder.binding.txtPriceItemGoods.setText(goods.getFormattedPrice());
         holder.binding.txtCreatedAtItemGoods.setText(goods.getCreatedAtForUser());
 
@@ -75,11 +77,13 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<GoodsRecyclerAdap
         }
 
 
+
     }
 
     public void resetList(ArrayList<Goods> newList){
         goodsList.clear();
         goodsList.addAll(newList);
+        Log.d("searchFilter","newListSize : "+newList.size());
         notifyDataSetChanged();
     }
 

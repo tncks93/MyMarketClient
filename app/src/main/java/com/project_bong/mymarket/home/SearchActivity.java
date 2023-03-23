@@ -1,5 +1,6 @@
 package com.project_bong.mymarket.home;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -7,9 +8,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
@@ -48,10 +51,17 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.d("searchAction","onEditorAction 호출됨");
-                SearchFilter searchFilter = new SearchFilter(SearchFilter.FILTER_NONE,v.getText().toString());
-                Intent intent = new Intent(getBaseContext(),SearchResultsActivity.class);
-                intent.putExtra("searchFilter",new Gson().toJson(searchFilter));
-                startActivity(intent);
+                if(v.getText().toString().replaceAll(" ","").equals("")){
+                    Toast.makeText(getBaseContext(),getString(R.string.str_hint_search),Toast.LENGTH_SHORT).show();
+
+                }else{
+                    getWindow().getDecorView().clearFocus();
+                    SearchFilter searchFilter = new SearchFilter(SearchFilter.FILTER_NONE,v.getText().toString());
+                    Intent intent = new Intent(getBaseContext(),SearchResultsActivity.class);
+                    intent.putExtra("searchFilter",new Gson().toJson(searchFilter));
+                    startActivity(intent);
+                }
+
                 return true;
             }
         });
@@ -91,6 +101,17 @@ public class SearchActivity extends AppCompatActivity {
         binding.recyclerCategorySearch.setLayoutManager(layoutManager);
         binding.recyclerCategorySearch.setAdapter(categoryAdapter);
 
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+            return true;
+        }else{
+            return false;
+        }
 
     }
 }

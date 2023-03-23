@@ -10,8 +10,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class SearchFilter {
     public final static String FILTER_NONE = "none";
-    public final int DEFAULT_MIN_PRICE = 0;
-    public final int DEFAULT_MAX_PRICE = 100000000;
+    public final static int DEFAULT_MIN_PRICE = 0;
+    public final static int DEFAULT_MAX_PRICE = 100000000;
 
     @SerializedName("category")
     private String category;
