@@ -117,7 +117,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbarUpdateUser.toolbarDefault);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        binding.toolbarUpdateUser.toolbarTitle.setText(getString(R.string.str_title_update_goods));
+        binding.toolbarUpdateUser.toolbarTitle.setText(getString(R.string.str_title_update_user));
 
         binding.imgUserProfileUpdateUser.setOnClickListener(v->{
             showProfileImageDialog();
@@ -168,15 +168,18 @@ public class UpdateUserActivity extends AppCompatActivity {
 
         JsonObject userJson = new JsonObject();
         userJson.addProperty("name",name);
-        RequestBody userBody = RequestBody.create(userJson.toString(), MediaType.parse("application/json; charset=utf-8"));
-        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+        RequestBody userBody = RequestBody.create(userJson.toString(),
+                MediaType.parse("application/json; charset=utf-8"));
+        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext())
+                .create(RetrofitInterface.class);
         Call<String> callUpdateUser;
         if(isDefaultImage){
             callUpdateUser = retrofit.callUpdateUser(userBody,null);
         }else{
 
             File imageFile = new File(currentImagePath);
-            RequestBody imageBody = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
+            RequestBody imageBody = RequestBody.create(imageFile,
+                    MediaType.parse("image/jpeg"));
             String fileName = "user_"+System.currentTimeMillis()+".jpeg";
             MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image",fileName,imageBody);
             callUpdateUser = retrofit.callUpdateUser(userBody,imagePart);
