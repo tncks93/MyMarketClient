@@ -54,7 +54,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         binding.toolbarHome.toolbarDefault.inflateMenu(R.menu.menu_home);
         binding.toolbarHome.toolbarTitle.setText(R.string.str_title_home);
-        Log.d("test","onViewCreated 테스트");
         initGoodsRecyclerView();
         getGoodsList(0);
 
@@ -116,7 +115,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void getGoodsList(int pageIndex){
-        Log.d("test","getGoodsList 테스트");
         isLoading = true;
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getContext()).create(RetrofitInterface.class);
         Call<ArrayList<Goods>> callGoodsList = retrofit.callGoodsList(pageIndex);

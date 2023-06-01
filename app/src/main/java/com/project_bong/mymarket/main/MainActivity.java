@@ -18,6 +18,7 @@ import com.project_bong.mymarket.databinding.ActivityMainBinding;
 import com.project_bong.mymarket.dto.LoginUser;
 import com.project_bong.mymarket.home.HomeFragment;
 import com.project_bong.mymarket.my_page.MyPageFragment;
+import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.sale.SaleActivity;
 import com.project_bong.mymarket.util.LoginUserGetter;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        RetrofitClientInstance.initiate();
 
         setFragmentManager();
 

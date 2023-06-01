@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".chat.ChatFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    tools:context=".chat.ChatFragment"
+    android:orientation="vertical">
+    <include layout="@layout/actionbar_default"
+        android:id="@+id/toolbar_fragment_chat"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_room_chat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="chat" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="true"
 
-</FrameLayout>
+        />
+
+
+
+
+</LinearLayout>

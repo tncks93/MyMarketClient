@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ImageView
+        android:id="@+id/img_profile_chat_opponent"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        tools:src="@drawable/user_default"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <TextView
+        android:id="@+id/txt_message_chat_opponent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_profile_chat_opponent"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:minWidth="50dp"
+        android:maxWidth="200dp"
+        android:background="@drawable/chat_box_opponent"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        tools:text="가나다"
+        />
+    <TextView
+        android:id="@+id/txt_created_at_chat_opponent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/txt_message_chat_opponent"
+        app:layout_constraintStart_toEndOf="@id/txt_message_chat_opponent"
+        tools:text="오후 7:30"
+        android:layout_marginEnd="5dp"
+        android:textSize="12sp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,8 +14,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.JsonObject;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.adapter.GoodsImagePagerAdapter;
+import com.project_bong.mymarket.chat.ChatRoomActivity;
 import com.project_bong.mymarket.databinding.ActivityGoodsBinding;
 import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
@@ -57,6 +59,11 @@ public class GoodsActivity extends AppCompatActivity {
         binding.btnUpdateGoods.setOnClickListener(sellerClickListener);
         binding.btnChangeStateGoods.setOnClickListener(sellerClickListener);
         binding.btnDeleteGoods.setOnClickListener(sellerClickListener);
+
+        //구매자 메뉴 클릭리스너 셋
+        BuyerBtnClickListener buyerBtnClickListener = new BuyerBtnClickListener();
+        binding.btnChatGoods.setOnClickListener(buyerBtnClickListener);
+
 
     }
 
@@ -216,6 +223,54 @@ public class GoodsActivity extends AppCompatActivity {
                         }
                     });
             builder.show();
+        }
+    }
+
+    private class BuyerBtnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.btn_favorite_goods:
+                    checkFavoriteGoods();
+                    break;
+
+                case R.id.btn_chat_goods:
+                    enterChatRoom();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void checkFavoriteGoods(){
+
+        }
+
+        private void enterChatRoom(){
+            RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+            Call<Integer> callConfirmChatRoom = retrofit.callConfirmChatRoom(goodsId,goods.getSeller().getId());
+            callConfirmChatRoom.enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    if(response.body() != null){
+                        int roomId = response.body();
+                        Log.d("chat","roomId : "+roomId);
+                        Intent intent = new Intent(getBaseContext(),ChatRoomActivity.class);
+                        intent.putExtra("roomId",roomId);
+                        startActivity(intent);
+
+
+                    }
+                    Log.d("chat","onResponse");
+                }
+
+                @Override
+                public void onFailure(Call<Integer> call, Throwable t) {
+                    RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+                }
+            });
+
         }
     }
 

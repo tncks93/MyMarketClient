@@ -2,6 +2,8 @@ package com.project_bong.mymarket.retrofit;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.JsonObject;
+import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.dto.LoginUser;
 
@@ -57,4 +59,11 @@ public interface RetrofitInterface {
     @Multipart
     @POST("goods/search_goods.php")
     Call<ArrayList<Goods>> callSearchedGoodsList(@Part("page_idx") int pageIdx,@Part("filter") RequestBody bodyFilter);
+
+    @FormUrlEncoded
+    @POST("chat/confirm_chat_room.php")
+    Call<Integer> callConfirmChatRoom(@Field("goods_id") int goodsId,@Field("seller_id") int sellerId);
+
+    @GET("chat/get_chat_rooms.php")
+    Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") int pageIdx);
 }

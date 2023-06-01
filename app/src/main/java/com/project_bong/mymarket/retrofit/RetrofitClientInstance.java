@@ -60,6 +60,7 @@ public class RetrofitClientInstance {
         return BASE_URL;
     }
 
+
     public static void setOnFailure(Context context, Throwable t){
         String msg = context.getString(R.string.failure_on_network);
         Log.d(FAILURE,t.getMessage());
