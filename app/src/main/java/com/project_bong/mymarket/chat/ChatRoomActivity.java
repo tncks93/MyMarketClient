@@ -6,10 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.databinding.ActivityChatRoomBinding;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.TimeConverter;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -29,22 +32,23 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         roomId = getIntent().getIntExtra("roomId",-1);
 
-        testWebSocket();
+        initiateWebSocket();
 
         binding.btnSendMessageChatRoom.setOnClickListener(v->{
             String message = binding.editMessageChatRoom.getText().toString();
             if(!message.replaceAll(" ","").equals("")){
-                JsonObject jsonMessage = new JsonObject();
-                jsonMessage.addProperty("type","MESSAGE");
-                jsonMessage.addProperty("message",message);
-                webSocket.send(jsonMessage.toString());
-                Log.d("chat","sendMessage : "+jsonMessage.toString());
+                String msgJson = getMsgJsonFromStr(message);
+
+                webSocket.send(msgJson);
+                Log.d("chat","sendMessage : "+msgJson);
+            }else{
+                Toast.makeText(getBaseContext(),getString(R.string.str_hint_send_chat),Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-    private void testWebSocket(){
+    private void initiateWebSocket(){
         if(webSocket == null){
             Log.d("chat","testWebSocket 호출");
             OkHttpClient client = new OkHttpClient();
@@ -63,6 +67,18 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onDestroy();
         webSocket.close(1000,null);
         webSocket = null;
+    }
+
+    private String getMsgJsonFromStr(String message){
+        TimeConverter timeConverter = new TimeConverter();
+        String timeUTC = timeConverter.getUTC();
+        JsonObject jsonMessage = new JsonObject();
+        jsonMessage.addProperty("type","MESSAGE");
+        jsonMessage.addProperty("message",message);
+        jsonMessage.addProperty("msg_type","text");
+        jsonMessage.addProperty("sent_at",timeUTC);
+
+        return jsonMessage.toString();
     }
 
     public class SocketListener extends WebSocketListener {

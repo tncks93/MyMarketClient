@@ -18,6 +18,12 @@ public class ChatRoom {
     @Expose
     private String goodsImage;
 
+    @SerializedName("last_msg")
+    private String lastMessage;
+
+    @SerializedName("last_msg_type")
+    private String lastMessageType;
+
     @SerializedName("updated_at")
     private String updatedAt;
 
@@ -37,6 +43,13 @@ public class ChatRoom {
         return goodsImage;
     }
 
+    public String getLastMessage(){
+        return lastMessage;
+    }
+
+    public String getLastMessageType(){
+        return lastMessageType;
+    }
     public String getUpdatedAt() {
         return updatedAt;
     }

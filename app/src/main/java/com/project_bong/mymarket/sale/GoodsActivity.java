@@ -23,6 +23,7 @@ import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.TimeConverter;
 
 import java.util.ArrayList;
 
@@ -248,8 +249,9 @@ public class GoodsActivity extends AppCompatActivity {
         }
 
         private void enterChatRoom(){
+            String timeUTC = new TimeConverter().getUTC();
             RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
-            Call<Integer> callConfirmChatRoom = retrofit.callConfirmChatRoom(goodsId,goods.getSeller().getId());
+            Call<Integer> callConfirmChatRoom = retrofit.callConfirmChatRoom(goodsId,goods.getSeller().getId(),timeUTC);
             callConfirmChatRoom.enqueue(new Callback<Integer>() {
                 @Override
                 public void onResponse(Call<Integer> call, Response<Integer> response) {

@@ -55,6 +55,7 @@
         app:layout_constraintEnd_toStartOf="@id/text_unread_chat"
         >
         <TextView
+            android:id="@+id/txt_last_message_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="간다라마바사아자차카타파하간다라마바사아자차카타파하"

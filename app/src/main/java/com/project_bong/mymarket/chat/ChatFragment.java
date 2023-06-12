@@ -8,20 +8,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.adapter.ChatRoomsAdapter;
 import com.project_bong.mymarket.databinding.FragmentChatBinding;
 import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
+import com.project_bong.mymarket.util.LoginUserGetter;
 
 import java.util.ArrayList;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +41,10 @@ public class ChatFragment extends Fragment {
     private FragmentChatBinding binding;
     private ArrayList<ChatRoom> rooms;
     private ChatRoomsAdapter roomsAdapter;
+    private WebSocket webSocket = null;
+
+    //paging 변수
+    private boolean isLoading = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,10 +57,16 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.toolbarFragmentChat.toolbarTitle.setText(getString(R.string.str_title_chat));
+
         initRoomsRecyclerView();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         getRooms(0);
-
-
+        initiateWebSocket();
     }
 
     private void initRoomsRecyclerView(){
@@ -68,24 +88,123 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        binding.recyclerRoomChat.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                //paging
+//                int lastVisibleItemPosition = ((LinearLayoutManager)binding.recyclerRoomChat.getLayoutManager()).findLastCompletelyVisibleItemPosition() +1;
+//                int itemTotalCount = roomsAdapter.getItemCount();
+//                if(itemTotalCount > 0 && lastVisibleItemPosition == itemTotalCount && !isLoading && lastVisibleItemPosition != 0){
+//                    int lastIdx = roomsAdapter.getItemCount()-1;
+//                    getRooms(roomsAdapter.getItem(lastIdx).getRoomId());
+//                }
+
+            }
+        });
+
     }
 
-    private void getRooms(int pageIdx){
+    private void getRooms(int pageIdx) {
+
+        isLoading = true;
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getContext()).create(RetrofitInterface.class);
         Call<ArrayList<ChatRoom>> callChatRooms = retrofit.callChatRooms(pageIdx);
         callChatRooms.enqueue(new Callback<ArrayList<ChatRoom>>() {
             @Override
             public void onResponse(Call<ArrayList<ChatRoom>> call, Response<ArrayList<ChatRoom>> response) {
-                if(response.body() != null){
-                    roomsAdapter.addItems(response.body());
+                if (response.body() != null) {
+                    if (pageIdx == 0) {
+                        roomsAdapter.newItems(response.body());
+                    } else {
+                        roomsAdapter.addItems(response.body());
+                    }
                 }
+                isLoading = false;
             }
 
             @Override
             public void onFailure(Call<ArrayList<ChatRoom>> call, Throwable t) {
-                RetrofitClientInstance.setOnFailure(getContext(),t);
+                RetrofitClientInstance.setOnFailure(getContext(), t);
+                isLoading = false;
             }
         });
+    }
+
+    private void initiateWebSocket(){
+        if(webSocket == null){
+            Log.d("chat","LobbyWebSocket 호출");
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url("ws://3.39.40.4:8080").build();
+
+            ChatFragment.LobbySocketListener socketListener = new ChatFragment.LobbySocketListener();
+
+            webSocket = client.newWebSocket(request, socketListener);
+            client.dispatcher().executorService().shutdown();
+        }
+    }
+
+    public class LobbySocketListener extends WebSocketListener {
+        private final String TAG = "chat";
+        @Override
+        public void onOpen(@NonNull WebSocket webSocket, @NonNull okhttp3.Response response) {
+            super.onOpen(webSocket,response);
+            JsonObject jsonEntry = new JsonObject();
+            jsonEntry.addProperty("type","LOBBY");
+            jsonEntry.addProperty("user_id", LoginUserGetter.getLoginUser().getId());
+
+            webSocket.send(jsonEntry.toString());
+
+        }
+
+        @Override
+        public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            super.onClosed(webSocket, code, reason);
+            Log.d(TAG,"socket closed");
+        }
+
+        @Override
+        public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            super.onClosing(webSocket, code, reason);
+        }
+
+        @Override
+        public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable okhttp3.Response response) {
+            super.onFailure(webSocket, t, response);
+            Log.d(TAG,"error : "+t);
+        }
+
+        @Override
+        public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
+            super.onMessage(webSocket,text);
+            Log.d(TAG,"message : "+text);
+
+            //로비 업데이트
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ChatRoom room = new Gson().fromJson(text, ChatRoom.class);
+                    roomsAdapter.updateRoom(room);
+                }
+            });
+
+
+
+        }
+
+        @Override
+        public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
+            super.onMessage(webSocket, bytes);
+        }
+
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        webSocket.close(1000,null);
+        webSocket = null;
     }
 
     @Override

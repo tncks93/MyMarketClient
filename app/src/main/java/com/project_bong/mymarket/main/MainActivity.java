@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.bumptech.glide.Glide;
@@ -96,12 +97,14 @@ public class MainActivity extends AppCompatActivity {
         for(Fragment frag:fm.getFragments()){
             fm.beginTransaction().hide(frag).commit();
         }
+        fm.beginTransaction().remove(chatFragment).commit();
 
             if(fragment.isAdded()){
                 fm.beginTransaction().show(fragment).commit();
             }else{
                 fm.beginTransaction().add(containerId,fragment).show(fragment).commit();
             }
+
 
 
     }

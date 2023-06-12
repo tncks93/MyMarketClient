@@ -62,7 +62,7 @@ public interface RetrofitInterface {
 
     @FormUrlEncoded
     @POST("chat/confirm_chat_room.php")
-    Call<Integer> callConfirmChatRoom(@Field("goods_id") int goodsId,@Field("seller_id") int sellerId);
+    Call<Integer> callConfirmChatRoom(@Field("goods_id") int goodsId,@Field("seller_id") int sellerId,@Field("created_at") String createdAt);
 
     @GET("chat/get_chat_rooms.php")
     Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") int pageIdx);

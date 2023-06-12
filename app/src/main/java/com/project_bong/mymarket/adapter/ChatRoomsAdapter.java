@@ -18,6 +18,8 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
     private ArrayList<ChatRoom> roomsList;
     private Context mContext;
 
+    private final String MSG_TYPE_TEXT = "text";
+
     public interface OnItemClickListener {
         void onItemClick(View v, int pos);
     }
@@ -73,14 +75,52 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
 
         holder.binding.txtOpponentNameChat.setText(chatRoom.getOpName());
 
+        switch(chatRoom.getLastMessageType()){
+            case  MSG_TYPE_TEXT:
+                holder.binding.txtLastMessageChat.setText(chatRoom.getLastMessage());
+            break;
 
+          default:
+            break;
+        }
 
 
     }
 
-    public void addItems(ArrayList<ChatRoom> items){
+    public void updateRoom(ChatRoom chatRoom){
+        int roomId = chatRoom.getRoomId();
+        boolean doesExist = false;
+        int existPosition = -1;
+
+        for(int i=0;i<roomsList.size();i++){
+            if(roomsList.get(i).getRoomId() == roomId){
+                doesExist = true;
+                existPosition = i;
+                break;
+            }
+        }
+
+        if(doesExist && existPosition != -1){
+            roomsList.remove(existPosition);
+            notifyItemRemoved(existPosition);
+        }
+
+        roomsList.add(0,chatRoom);
+        notifyItemInserted(0);
+
+    }
+
+    public void newItems(ArrayList<ChatRoom> items){
+        roomsList.clear();
         roomsList.addAll(items);
         notifyDataSetChanged();
+
+    }
+    public void addItems(ArrayList<ChatRoom> items){
+        int firstPos = getItemCount();
+        int itemSize = items.size();
+        roomsList.addAll(items);
+        notifyItemRangeInserted(firstPos,itemSize);
     }
 
     public ChatRoom getItem(int pos){

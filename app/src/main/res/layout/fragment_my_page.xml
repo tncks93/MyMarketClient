@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".chat.ChatFragment">
+    tools:context=".my_page.MyPageFragment">
     <include
         android:id="@+id/toolbar_my_page"
         layout="@layout/actionbar_default"
