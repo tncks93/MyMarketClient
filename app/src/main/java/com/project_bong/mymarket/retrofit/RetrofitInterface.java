@@ -66,4 +66,7 @@ public interface RetrofitInterface {
 
     @GET("chat/get_chat_rooms.php")
     Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") int pageIdx);
+
+    @GET("chat/get_all_unread.php")
+    Call<Integer> callAllUnread(@Query("room_id") int roomId);
 }

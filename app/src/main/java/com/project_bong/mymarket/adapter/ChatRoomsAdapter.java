@@ -1,6 +1,7 @@
 package com.project_bong.mymarket.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.project_bong.mymarket.databinding.ItemChatRoomsAdapterBinding;
 import com.project_bong.mymarket.dto.ChatRoom;
+import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
+import com.project_bong.mymarket.retrofit.RetrofitInterface;
+import com.project_bong.mymarket.util.TimeConverter;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.ViewHolder> {
     private ArrayList<ChatRoom> roomsList;
@@ -64,6 +73,8 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
     public void onBindViewHolder(ChatRoomsAdapter.ViewHolder holder, int position) {
         ChatRoom chatRoom = roomsList.get(position);
 
+        getAllUnread(holder,chatRoom.getRoomId());
+
         Glide.with(mContext).load(chatRoom.getOpImage()).centerCrop().circleCrop().into(holder.binding.imgOpponentProfile);
         if(chatRoom.getGoodsImage() == null){
             holder.binding.imgGoodsChat.setVisibility(View.GONE);
@@ -83,6 +94,10 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
           default:
             break;
         }
+
+        setLocalTime(holder,chatRoom.getUpdatedAt());
+
+
 
 
     }
@@ -141,5 +156,45 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mContext = recyclerView.getContext();
+    }
+
+    private void getAllUnread(ChatRoomsAdapter.ViewHolder holder,int roomId){
+        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(mContext).create(RetrofitInterface.class);
+        Call<Integer> callAllUnread = retrofit.callAllUnread(roomId);
+
+        callAllUnread.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if(response.body() != null){
+                    int count = response.body();
+                    String strCount = Integer.toString(count);
+                    Log.d("chat","unreadCount : "+count+ " room : "+roomId);
+                    if(count == 0){
+                        holder.binding.textUnreadChat.setText(strCount);
+                        holder.binding.textUnreadChat.setVisibility(View.GONE);
+                    }else if(count < 100){
+                        holder.binding.textUnreadChat.setText(strCount);
+                        holder.binding.textUnreadChat.setVisibility(View.VISIBLE);
+                    }else{
+                        String over100 = count + "+";
+                        holder.binding.textUnreadChat.setText(over100);
+                        holder.binding.textUnreadChat.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                holder.binding.textUnreadChat.setVisibility(View.GONE);
+                Log.d("chat","getUnreadCount error");
+            }
+        });
+    }
+
+    private void setLocalTime(ChatRoomsAdapter.ViewHolder holder, String UTCTime){
+        TimeConverter timeConverter = new TimeConverter();
+        String localTime = timeConverter.convertUTCtoLocal(UTCTime);
+
+        Log.d("chat","local : "+localTime);
     }
 }
