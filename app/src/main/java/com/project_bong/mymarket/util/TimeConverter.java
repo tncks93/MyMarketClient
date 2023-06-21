@@ -28,19 +28,15 @@ public class TimeConverter {
         return dateTime;
     }
 
-    public String convertUTCtoLocal(String utcTime){
+    public LocalDateTime convertUTCtoLocal(String utcTime){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(format);
-        LocalDateTime dateTime = LocalDateTime.parse(utcTime,timeFormatter);
-        ZonedDateTime zonedDateTime = dateTime.atZone(zoneUTC);
-//        zonedDateTime.withZoneSameInstant(zoneId);
-        ZonedDateTime zonedLocal = zonedDateTime.withZoneSameInstant(zoneId);
-        int hour = zonedLocal.getHour();
-        int minute = zonedLocal.getMinute();
-        Log.d("chat","hour : "+hour+ " minute : "+minute);
+        ZonedDateTime zonedLocal = LocalDateTime.parse(utcTime,timeFormatter).atZone(zoneUTC).withZoneSameInstant(zoneId);
 
+        return zonedLocal.toLocalDateTime();
+    }
 
+    public String formatLocal(LocalDateTime localDateTime, String pattern){
 
-
-        return zonedDateTime.withZoneSameInstant(zoneId).toString();
+        return localDateTime.format(DateTimeFormatter.ofPattern(pattern)).toString();
     }
 }

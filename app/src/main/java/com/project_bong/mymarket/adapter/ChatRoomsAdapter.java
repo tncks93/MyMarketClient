@@ -16,6 +16,8 @@ import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
 import com.project_bong.mymarket.util.TimeConverter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
@@ -193,8 +195,36 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
 
     private void setLocalTime(ChatRoomsAdapter.ViewHolder holder, String UTCTime){
         TimeConverter timeConverter = new TimeConverter();
-        String localTime = timeConverter.convertUTCtoLocal(UTCTime);
+        LocalDateTime localDateTime = timeConverter.convertUTCtoLocal(UTCTime);
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate thisYearStart = LocalDate.of(today.getYear(),1,1);
 
-        Log.d("chat","local : "+localTime);
+        Log.d("chat","local : "+localDateTime.toString()+" today : "+today.toString()
+        +" yesterday : "+yesterday.toString()+" thisYearStart : "+thisYearStart.toString());
+
+        String timeForDisplay;
+        if(today.isEqual(localDateTime.toLocalDate())){
+            //오늘
+            String pattern = "a hh:mm";
+            timeForDisplay = timeConverter.formatLocal(localDateTime,pattern);
+
+        }else if(yesterday.isEqual(localDateTime.toLocalDate())){
+            //어제
+            timeForDisplay = "어제";
+        }else if(localDateTime.toLocalDate().compareTo(thisYearStart)>=0){
+            //올 해
+            String pattern = "M월 d일";
+            timeForDisplay = timeConverter.formatLocal(localDateTime,pattern);
+        }else{
+            //그 외
+            String pattern = "yyyy.MM.dd";
+            timeForDisplay = timeConverter.formatLocal(localDateTime,pattern);
+
+        }
+
+        if(timeForDisplay != null){
+            holder.binding.txtTimeLastMessageChat.setText(timeForDisplay);
+        }
     }
 }

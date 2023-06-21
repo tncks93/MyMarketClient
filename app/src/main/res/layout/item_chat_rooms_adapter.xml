@@ -39,10 +39,12 @@
             android:textSize="16sp"
             android:ellipsize="end"/>
         <TextView
+            android:id="@+id/txt_time_last_message_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="2000.00.00"
             android:textSize="12sp"
+            android:layout_marginStart="5dp"
             />
 
     </LinearLayout>
