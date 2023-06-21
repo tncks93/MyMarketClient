@@ -65,7 +65,7 @@ public interface RetrofitInterface {
     Call<Integer> callConfirmChatRoom(@Field("goods_id") int goodsId,@Field("seller_id") int sellerId,@Field("created_at") String createdAt);
 
     @GET("chat/get_chat_rooms.php")
-    Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") int pageIdx);
+    Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") String pageIdx, @Query("mode") String mode);
 
     @GET("chat/get_all_unread.php")
     Call<Integer> callAllUnread(@Query("room_id") int roomId);

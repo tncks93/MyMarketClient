@@ -18,8 +18,8 @@ import com.project_bong.mymarket.util.TimeConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -127,11 +127,27 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
 
     }
 
-    public void newItems(ArrayList<ChatRoom> items){
+    public void addFirstItems(ArrayList<ChatRoom> items){
         roomsList.clear();
         roomsList.addAll(items);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(0,items.size());
+//        notifyDataSetChanged();
 
+    }
+
+    public void addNewItems(ArrayList<ChatRoom> items){
+        if(items.size() > 0){
+            for(int i=0; i<items.size();i++){
+                int newRoomId = items.get(i).getRoomId();
+
+                roomsList.removeIf(chatRoom -> newRoomId == chatRoom.getRoomId());
+            }
+
+
+
+            roomsList.addAll(0,items);
+        }
+        notifyDataSetChanged();
     }
     public void addItems(ArrayList<ChatRoom> items){
         int firstPos = getItemCount();

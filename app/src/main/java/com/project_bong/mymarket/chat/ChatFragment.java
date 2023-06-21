@@ -45,6 +45,9 @@ public class ChatFragment extends Fragment {
 
     //paging 변수
     private boolean isLoading = false;
+    private final String MODE_FIRST = "first";
+    private final String MODE_LATER = "later";
+    private final String MODE_EARLIER = "earlier";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,13 +62,14 @@ public class ChatFragment extends Fragment {
         binding.toolbarFragmentChat.toolbarTitle.setText(getString(R.string.str_title_chat));
 
         initRoomsRecyclerView();
+//        getRooms("0",MODE_FIRST);
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        getRooms(0);
+        getNewRooms();
         initiateWebSocket();
     }
 
@@ -93,32 +97,63 @@ public class ChatFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //paging
-//                int lastVisibleItemPosition = ((LinearLayoutManager)binding.recyclerRoomChat.getLayoutManager()).findLastCompletelyVisibleItemPosition() +1;
-//                int itemTotalCount = roomsAdapter.getItemCount();
-//                if(itemTotalCount > 0 && lastVisibleItemPosition == itemTotalCount && !isLoading && lastVisibleItemPosition != 0){
-//                    int lastIdx = roomsAdapter.getItemCount()-1;
-//                    getRooms(roomsAdapter.getItem(lastIdx).getRoomId());
-//                }
+                int lastVisibleItemPosition = ((LinearLayoutManager)binding.recyclerRoomChat.getLayoutManager()).findLastCompletelyVisibleItemPosition() +1;
+                int itemTotalCount = roomsAdapter.getItemCount();
+                if(itemTotalCount > 0 && lastVisibleItemPosition == itemTotalCount && !isLoading){
+                    int lastIdx = roomsAdapter.getItemCount()-1;
+                    Log.d("chat","preLastIdx : "+roomsAdapter.getItem(lastIdx).getUpdatedAt());
+                    getRooms(roomsAdapter.getItem(lastIdx).getUpdatedAt(),MODE_EARLIER);
+                }
 
             }
         });
 
     }
 
-    private void getRooms(int pageIdx) {
+    private void getNewRooms(){
+        if(roomsAdapter.getItemCount() == 0){
+            getRooms("0",MODE_FIRST);
+        }else{
+            getRooms(roomsAdapter.getItem(0).getUpdatedAt(),MODE_LATER);
+        }
+    }
+
+    private void getRooms(String pageIdx,String mode) {
 
         isLoading = true;
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getContext()).create(RetrofitInterface.class);
-        Call<ArrayList<ChatRoom>> callChatRooms = retrofit.callChatRooms(pageIdx);
+        Call<ArrayList<ChatRoom>> callChatRooms = retrofit.callChatRooms(pageIdx,mode);
         callChatRooms.enqueue(new Callback<ArrayList<ChatRoom>>() {
             @Override
             public void onResponse(Call<ArrayList<ChatRoom>> call, Response<ArrayList<ChatRoom>> response) {
                 if (response.body() != null) {
-                    if (pageIdx == 0) {
-                        roomsAdapter.newItems(response.body());
-                    } else {
-                        roomsAdapter.addItems(response.body());
+                    if(response.body().size()>=1){
+                        Log.d("chat","resSize : "+response.body().size());
+                        Log.d("chat","resFirstUpdatedAt : "+response.body().get(0).getUpdatedAt());
+
                     }
+
+                    switch (mode) {
+                        case MODE_FIRST:
+                            roomsAdapter.addFirstItems(response.body());
+                            break;
+
+                        case MODE_EARLIER:
+                            roomsAdapter.addItems(response.body());
+                            break;
+
+                        case MODE_LATER:
+                            roomsAdapter.addNewItems(response.body());
+                            break;
+
+                        default:
+                            break;
+                    }
+//                    if (pageIdx.equals("0")) {
+//                        roomsAdapter.newItems(response.body());
+//                    } else {
+//                        roomsAdapter.addItems(response.body());
+//                    }
                 }
                 isLoading = false;
             }
