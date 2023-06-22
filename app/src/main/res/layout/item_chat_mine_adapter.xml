@@ -12,11 +12,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:minWidth="50dp"
+        android:minWidth="30dp"
         android:maxWidth="200dp"
         android:background="@drawable/chat_box_mine"
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:gravity="end|center"
         tools:text="가나다"
         />
 

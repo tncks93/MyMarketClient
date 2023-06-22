@@ -19,12 +19,15 @@ public class ChatRoom {
     private String goodsImage;
 
     @SerializedName("last_msg")
+    @Expose
     private String lastMessage;
 
     @SerializedName("last_msg_type")
+    @Expose
     private String lastMessageType;
 
     @SerializedName("updated_at")
+    @Expose
     private String updatedAt;
 
     public int getRoomId() {

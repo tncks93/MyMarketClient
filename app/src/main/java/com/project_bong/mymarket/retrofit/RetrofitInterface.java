@@ -3,6 +3,7 @@ package com.project_bong.mymarket.retrofit;
 import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
+import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.dto.LoginUser;
@@ -66,6 +67,11 @@ public interface RetrofitInterface {
 
     @GET("chat/get_chat_rooms.php")
     Call<ArrayList<ChatRoom>> callChatRooms(@Query("page_idx") String pageIdx, @Query("mode") String mode);
+
+    @GET("chat/get_room.php")
+    Call<ChatRoom> callChatRoom(@Query("room_id") int roomId);
+    @GET("chat/get_messages.php")
+    Call<ArrayList<ChatMessage>> callChatMessages(@Query("room_id") int roomId);
 
     @GET("chat/get_all_unread.php")
     Call<Integer> callAllUnread(@Query("room_id") int roomId);
