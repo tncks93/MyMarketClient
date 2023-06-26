@@ -15,6 +15,7 @@ public class ChatMessage {
     @Expose
     private String opImage;
 
+
     @SerializedName("from_id")
     private int fromId;
 
@@ -49,6 +50,7 @@ public class ChatMessage {
         return opImage;
     }
 
+
     public int getFromId() {
         return fromId;
     }
@@ -67,6 +69,10 @@ public class ChatMessage {
 
     public int getIsRead() {
         return isRead;
+    }
+
+    public void setIsRead(int isRead){
+        this.isRead = isRead;
     }
 
     public String getSentAt() {

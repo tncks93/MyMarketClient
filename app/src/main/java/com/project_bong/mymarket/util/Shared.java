@@ -8,6 +8,7 @@ public class Shared {
     private Context mContext;
 
     public static final String LOGIN_FILE_NAME = "Login";
+    public static final String BOOK_MARK_FILE_NAME = "BookMark";
     public static final String LOGIN_KEY = "loginKey";
 
     public Shared(Context context,String fileName){

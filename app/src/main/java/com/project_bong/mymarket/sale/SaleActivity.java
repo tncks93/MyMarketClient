@@ -227,6 +227,7 @@ public class SaleActivity extends AppCompatActivity {
                     binding.editCategoryGoodsRegister.setText(goods.getCategory());
                     binding.editPriceGoodsRegister.setText(goods.getFormattedPrice());
                     binding.editDetailsGoodsRegister.setText(goods.getDetails());
+                    price = String.valueOf(goods.getPrice());
                 }else{
                     Toast.makeText(getBaseContext(),getString(R.string.failure_on_network),Toast.LENGTH_SHORT).show();
                     finish();

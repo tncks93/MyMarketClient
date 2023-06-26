@@ -23,6 +23,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private Context mContext;
     private int userId;
 
+    public final String PAGING_MODE_FRONT = "front";
+    public final String PAGING_MODE_BACK = "back";
     private final int VIEW_TYPE_MINE = 100;
     private final int VIEW_TYPE_OPPONENT = 200;
 
@@ -67,6 +69,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if(holder instanceof MineViewHolder){
             //switch 문으로 msg type별로 나눠야 함.
             ((MineViewHolder) holder).binding.txtMessageChatMine.setText(chatMessage.getContent());
+            if(chatMessage.getIsRead() == 0){
+                ((MineViewHolder) holder).binding.txtIsReadChatMine.setVisibility(View.VISIBLE);
+            }else if(chatMessage.getIsRead() == 1){
+                ((MineViewHolder) holder).binding.txtIsReadChatMine.setVisibility(View.GONE);
+            }
 
 
         }else if(holder instanceof OpponentViewHolder){
@@ -89,10 +96,45 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+
     public void addNewItem(ChatMessage chatMessage){
         int newPosition = getItemCount();
         listMessages.add(chatMessage);
         notifyItemInserted(newPosition);
+    }
+
+    public void updatePagedMessages(ArrayList<ChatMessage> items,String pagingMode){
+        int itemSize = items.size();
+        if(pagingMode.equals(PAGING_MODE_FRONT)){
+            listMessages.addAll(0,items);
+            notifyItemRangeInserted(0,itemSize);
+
+        }else if(pagingMode.equals(PAGING_MODE_BACK)){
+            int positionStart = listMessages.size();
+            listMessages.addAll(items);
+            notifyItemRangeInserted(positionStart,itemSize);
+        }
+    }
+
+    public void updateIsRead(){
+        int positionStart = 0;
+        for(int i = listMessages.size()-1; i>=0;i--){
+            int isRead = listMessages.get(i).getIsRead();
+            if(isRead == 1 || listMessages.get(i).getFromId() != userId){
+                positionStart = i+1;
+                break;
+            }
+
+            if(isRead == 0 && listMessages.get(i).getFromId() == userId){
+                ChatMessage chatMessage = listMessages.get(i);
+                chatMessage.setIsRead(1);
+                listMessages.set(i,chatMessage);
+            }
+        }
+        Log.d("chat","updateIsRead -> posStart : "+positionStart);
+
+        int count = listMessages.size() - positionStart;
+        notifyItemRangeChanged(positionStart,count);
     }
 
     @Override
@@ -105,8 +147,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }else{
             return VIEW_TYPE_OPPONENT;
         }
+    }
 
-
+    public ChatMessage getItem(int position) {
+        return listMessages.get(position);
     }
 
     @Override

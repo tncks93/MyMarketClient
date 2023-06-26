@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.adapter.ChatMessageAdapter;
 import com.project_bong.mymarket.databinding.ActivityChatRoomBinding;
@@ -20,8 +22,10 @@ import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.Shared;
 import com.project_bong.mymarket.util.TimeConverter;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
@@ -37,6 +41,9 @@ public class ChatRoomActivity extends AppCompatActivity {
     private ActivityChatRoomBinding binding;
     private int roomId;
     private ChatRoom chatRoom;
+    private boolean isLoading = false;
+    private boolean isLastPage = true;
+    private boolean isFirstPage = false;
     private ChatMessageAdapter messageAdapter;
     private ArrayList<ChatMessage> listMessages;
     private WebSocket webSocket = null;
@@ -53,7 +60,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         initMessageAdapter();
 //        getRoomInfo();
-        getMessages();
+        getFirstMessages();
 
         initiateWebSocket();
 
@@ -69,6 +76,31 @@ public class ChatRoomActivity extends AppCompatActivity {
                 Log.d("chat","sendMessage : "+msgJson);
             }else{
                 Toast.makeText(getBaseContext(),getString(R.string.str_hint_send_chat),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.recyclerMessageChatRoom.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(messageAdapter.getItemCount() == 0 || isLoading){
+                    return;
+                }
+                int firstVisiblePosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                int lastVisiblePosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+
+                if(firstVisiblePosition == 0 && !isFirstPage){
+                    //이전 채팅 paging
+                    getMessagesWithPaging(messageAdapter.getItem(0).getSentAt(), messageAdapter.PAGING_MODE_FRONT);
+                    return;
+                }
+
+                if(lastVisiblePosition == messageAdapter.getItemCount()-1 && !isLastPage){
+                    //나중 채팅 paging
+                    getMessagesWithPaging(messageAdapter.getItem(messageAdapter.getItemCount()-1).getSentAt(), messageAdapter.PAGING_MODE_BACK);
+                }
+
+
             }
         });
 
@@ -93,6 +125,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         messageAdapter = new ChatMessageAdapter(listMessages);
         binding.recyclerMessageChatRoom.setLayoutManager(new LinearLayoutManager(getBaseContext(),LinearLayoutManager.VERTICAL,false));
         binding.recyclerMessageChatRoom.setAdapter(messageAdapter);
+        binding.recyclerMessageChatRoom.setItemAnimator(null);
     }
     private void getRoomInfo(){
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
@@ -115,20 +148,60 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
     }
-    private void getMessages(){
+    private void getFirstMessages(){
+        isLoading = true;
+        String bookMark = new Shared(getBaseContext(),Shared.BOOK_MARK_FILE_NAME).getSharedString(String.valueOf(roomId));
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
-        Call<ArrayList<ChatMessage>> callChatMessages = retrofit.callChatMessages(roomId);
-        callChatMessages.enqueue(new Callback<ArrayList<ChatMessage>>() {
+        Call<JsonObject> callChatMessages = retrofit.callChatMessages(roomId,bookMark);
+        callChatMessages.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<ArrayList<ChatMessage>> call, Response<ArrayList<ChatMessage>> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if(response.body() != null){
-                    Log.d("chat","messagesCount : "+response.body().size());
-                    messageAdapter.addFirstItems(response.body());
+                    JsonObject jsonResponse = response.body();
+                    isLastPage = jsonResponse.get("is_last").getAsBoolean();
+                    Log.d("chat","firstMessages-> isLastPage : "+isLastPage);
+
+                    //JsonArray 를 ArrayList<ChatMessage> 로 변환
+                    Type typeList = new TypeToken<ArrayList<ChatMessage>>(){}.getType();
+                    ArrayList<ChatMessage> firstMessages = new Gson().fromJson(jsonResponse.get("messages").getAsJsonArray().toString(),typeList);
+                    messageAdapter.addFirstItems(firstMessages);
+                }
+
+                isLoading = false;
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+                isLoading = false;
+            }
+        });
+     }
+
+     private void getMessagesWithPaging(String pagingIdx, String pagingMode){
+        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+        Call<JsonObject> callPagedChatMessages = retrofit.callChatMessagesPaging(roomId,pagingIdx,pagingMode);
+        callPagedChatMessages.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if(response.body() != null){
+                    JsonObject jsonResponse = response.body();
+                    if(pagingMode.equals(messageAdapter.PAGING_MODE_FRONT)){
+                        isFirstPage = jsonResponse.get("is_first").getAsBoolean();
+                        Log.d("chat","pagingResponse-> isFirst : "+isFirstPage);
+                    }else if(pagingMode.equals(messageAdapter.PAGING_MODE_BACK)){
+                        isLastPage = jsonResponse.get("is_last").getAsBoolean();
+                        Log.d("chat","pagingResponse-> isLast : "+isLastPage);
+                    }
+                    Type typeList = new TypeToken<ArrayList<ChatMessage>>(){}.getType();
+                    ArrayList<ChatMessage> pagedMessages = new Gson().fromJson(jsonResponse.get("messages").getAsJsonArray().toString(),typeList);
+                    messageAdapter.updatePagedMessages(pagedMessages,pagingMode);
+
                 }
             }
 
             @Override
-            public void onFailure(Call<ArrayList<ChatMessage>> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 RetrofitClientInstance.setOnFailure(getBaseContext(),t);
             }
         });
@@ -139,6 +212,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onDestroy();
         webSocket.close(1000,null);
         webSocket = null;
+
+        saveBookMark();
     }
 
     private String getMsgJsonFromStr(String message){
@@ -151,6 +226,12 @@ public class ChatRoomActivity extends AppCompatActivity {
         jsonMessage.addProperty("sent_at",timeUTC);
 
         return jsonMessage.toString();
+    }
+
+    private void saveBookMark(){
+        Shared sharedBookMark = new Shared(getBaseContext(),Shared.BOOK_MARK_FILE_NAME);
+        TimeConverter timeConverter = new TimeConverter();
+        sharedBookMark.setSharedString(String.valueOf(roomId),timeConverter.getUTC());
     }
 
     public class SocketListener extends WebSocketListener {
@@ -197,19 +278,27 @@ public class ChatRoomActivity extends AppCompatActivity {
             switch (contentType) {
                 case CONTENT_MESSAGE:
                     ChatMessage newMessage = new Gson().fromJson(jsonMessage.get("content"),ChatMessage.class);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            messageAdapter.addNewItem(newMessage);
-                            binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
-                        }
-                    });
+                    Log.d("chat","newMessage : "+newMessage.getContent());
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            messageAdapter.addNewItem(newMessage);
+//                            binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
+//                        }
+//                    });
 
 
                     break;
 
                 case CONTENT_READ_EVENT:
                     //read_event
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            messageAdapter.updateIsRead();
+                        }
+                    });
+
                     break;
 
                 default:

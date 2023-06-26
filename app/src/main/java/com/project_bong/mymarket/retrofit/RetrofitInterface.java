@@ -71,8 +71,11 @@ public interface RetrofitInterface {
     @GET("chat/get_room.php")
     Call<ChatRoom> callChatRoom(@Query("room_id") int roomId);
     @GET("chat/get_messages.php")
-    Call<ArrayList<ChatMessage>> callChatMessages(@Query("room_id") int roomId);
+    Call<JsonObject> callChatMessages(@Query("room_id") int roomId,@Query("book_mark") @Nullable String bookMark);
 
     @GET("chat/get_all_unread.php")
     Call<Integer> callAllUnread(@Query("room_id") int roomId);
+
+    @GET("chat/get_messages_paging.php")
+    Call<JsonObject> callChatMessagesPaging(@Query("room_id") int roomId, @Query("page_idx") String pageIdx, @Query("paging_mode") String pagingMode);
 }
