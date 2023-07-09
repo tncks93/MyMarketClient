@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,6 +21,7 @@ import com.project_bong.mymarket.adapter.ChatMessageAdapter;
 import com.project_bong.mymarket.databinding.ActivityChatRoomBinding;
 import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.dto.ChatRoom;
+import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
 import com.project_bong.mymarket.util.LoginUserGetter;
@@ -41,6 +44,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     private ActivityChatRoomBinding binding;
     private int roomId;
     private ChatRoom chatRoom;
+    private Goods goods;
     private boolean isLoading = false;
     private boolean isLastPage = true;
     private boolean isFirstPage = false;
@@ -57,8 +61,14 @@ public class ChatRoomActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         roomId = getIntent().getIntExtra("roomId",-1);
+        String opName = getIntent().getStringExtra("opName");
+
+        setSupportActionBar(binding.toolbarChatRoom);
+        getSupportActionBar().setTitle(opName);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initMessageAdapter();
+//        getGoodsInfo();
 //        getRoomInfo();
         getFirstMessages();
 
@@ -67,11 +77,11 @@ public class ChatRoomActivity extends AppCompatActivity {
         binding.btnSendMessageChatRoom.setOnClickListener(v->{
             String message = binding.editMessageChatRoom.getText().toString();
             if(!message.replaceAll(" ","").equals("")){
-                String msgJson = getMsgJsonFromStr(message);
-                ChatMessage myMessage = new ChatMessage(LoginUserGetter.getLoginUser().getId(),ChatMessage.TYPE_TEXT,message,0);
+                JsonObject msgJson = getMsgJsonFromStr(message);
+                ChatMessage myMessage = new ChatMessage(LoginUserGetter.getLoginUser().getId(),ChatMessage.TYPE_TEXT,message,msgJson.get("sent_at").getAsString(),0);
                 messageAdapter.addNewItem(myMessage);
                 binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
-                webSocket.send(msgJson);
+                webSocket.send(msgJson.toString());
                 binding.editMessageChatRoom.setText("");
                 Log.d("chat","sendMessage : "+msgJson);
             }else{
@@ -127,6 +137,27 @@ public class ChatRoomActivity extends AppCompatActivity {
         binding.recyclerMessageChatRoom.setAdapter(messageAdapter);
         binding.recyclerMessageChatRoom.setItemAnimator(null);
     }
+
+    private void getGoodsInfo(){
+        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+        Call<Goods> callGoods = retrofit.callGoodsForChat(roomId);
+        callGoods.enqueue(new Callback<Goods>() {
+            @Override
+            public void onResponse(Call<Goods> call, Response<Goods> response) {
+                if(response.body() != null){
+                    goods = response.body();
+                    Glide.with(getBaseContext()).load(goods.getMainImage()).circleCrop().into(binding.imgGoodsChatRoom);
+                    binding.txtGoodsNameChatRoom.setText(goods.getName());
+                    binding.txtGoodsStateChatRoom.setText(goods.getState());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Goods> call, Throwable t) {
+                RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+            }
+        });
+    }
     private void getRoomInfo(){
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
         Call<ChatRoom> callChatRoom = retrofit.callChatRoom(roomId);
@@ -165,6 +196,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Type typeList = new TypeToken<ArrayList<ChatMessage>>(){}.getType();
                     ArrayList<ChatMessage> firstMessages = new Gson().fromJson(jsonResponse.get("messages").getAsJsonArray().toString(),typeList);
                     messageAdapter.addFirstItems(firstMessages);
+                    if(bookMark == null){
+                        binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
+                    }else{
+                        //bookMark 위치로 스크롤
+                    }
                 }
 
                 isLoading = false;
@@ -179,6 +215,7 @@ public class ChatRoomActivity extends AppCompatActivity {
      }
 
      private void getMessagesWithPaging(String pagingIdx, String pagingMode){
+        isLoading = true;
         RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
         Call<JsonObject> callPagedChatMessages = retrofit.callChatMessagesPaging(roomId,pagingIdx,pagingMode);
         callPagedChatMessages.enqueue(new Callback<JsonObject>() {
@@ -195,14 +232,17 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
                     Type typeList = new TypeToken<ArrayList<ChatMessage>>(){}.getType();
                     ArrayList<ChatMessage> pagedMessages = new Gson().fromJson(jsonResponse.get("messages").getAsJsonArray().toString(),typeList);
-                    messageAdapter.updatePagedMessages(pagedMessages,pagingMode);
+                    messageAdapter.updatePagedMessages(pagedMessages,pagingMode,isFirstPage);
 
                 }
+
+                isLoading = false;
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+                isLoading = false;
             }
         });
      }
@@ -216,7 +256,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         saveBookMark();
     }
 
-    private String getMsgJsonFromStr(String message){
+    private JsonObject getMsgJsonFromStr(String message){
         TimeConverter timeConverter = new TimeConverter();
         String timeUTC = timeConverter.getUTC();
         JsonObject jsonMessage = new JsonObject();
@@ -225,7 +265,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         jsonMessage.addProperty("msg_type","text");
         jsonMessage.addProperty("sent_at",timeUTC);
 
-        return jsonMessage.toString();
+        return jsonMessage;
     }
 
     private void saveBookMark(){
@@ -279,13 +319,18 @@ public class ChatRoomActivity extends AppCompatActivity {
                 case CONTENT_MESSAGE:
                     ChatMessage newMessage = new Gson().fromJson(jsonMessage.get("content"),ChatMessage.class);
                     Log.d("chat","newMessage : "+newMessage.getContent());
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            messageAdapter.addNewItem(newMessage);
-//                            binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
-//                        }
-//                    });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(newMessage.getFromId() == LoginUserGetter.getLoginUser().getId()){
+                                messageAdapter.updateMyItem(newMessage);
+                            }else{
+                                messageAdapter.addNewItem(newMessage);
+                                binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
+                            }
+
+                        }
+                    });
 
 
                     break;
@@ -316,4 +361,11 @@ public class ChatRoomActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -5,17 +5,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.project_bong.mymarket.databinding.ItemChatCenterAdapterBinding;
 import com.project_bong.mymarket.databinding.ItemChatMineAdapterBinding;
 import com.project_bong.mymarket.databinding.ItemChatOpponentAdapterBinding;
 import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.TimeConverter;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -27,6 +32,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public final String PAGING_MODE_BACK = "back";
     private final int VIEW_TYPE_MINE = 100;
     private final int VIEW_TYPE_OPPONENT = 200;
+    private final int VIEW_TYPE_CENTER = 300;
 
     public interface OnItemClickListener {
         void onItemClick(View v, int pos);
@@ -57,6 +63,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ItemChatOpponentAdapterBinding bindingOpponent = ItemChatOpponentAdapterBinding.inflate(LayoutInflater.from(mContext),viewGroup,false);
                 return new OpponentViewHolder(bindingOpponent);
 
+            case VIEW_TYPE_CENTER:
+                ItemChatCenterAdapterBinding bindingCenter = ItemChatCenterAdapterBinding.inflate(LayoutInflater.from(mContext),viewGroup,false);
+                return new CenterViewHolder(bindingCenter);
+
             default:
                 throw new IllegalArgumentException();
         }
@@ -75,6 +85,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((MineViewHolder) holder).binding.txtIsReadChatMine.setVisibility(View.GONE);
             }
 
+            setMessageTime(((MineViewHolder) holder).binding.txtCreatedAtChatMine, chatMessage.getSentAt());
+
 
         }else if(holder instanceof OpponentViewHolder){
             Glide.with(mContext).load(chatMessage.getOpImage()).circleCrop()
@@ -82,6 +94,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .into(((OpponentViewHolder) holder).binding.imgProfileChatOpponent);
 
             ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setText(chatMessage.getContent());
+
+            setMessageTime(((OpponentViewHolder) holder).binding.txtCreatedAtChatOpponent, chatMessage.getSentAt());
+        }else if(holder instanceof CenterViewHolder){
+            ((CenterViewHolder) holder).binding.txtDividerDate.setText(chatMessage.getContent());
         }
 
 
@@ -91,9 +107,63 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if(items.size() > 0){
             Log.d("chat","addFirstItems Size : "+items.size());
             listMessages.addAll(items);
-            notifyItemRangeInserted(0,items.size());
+            int insertedCount = setDateDividerAndGetCount(0,items.size()-1);
+            notifyItemRangeInserted(0,insertedCount);
 
         }
+    }
+
+    public void updatePagedMessages(ArrayList<ChatMessage> items, String pagingMode,boolean isFirstPage){
+        if(pagingMode.equals(PAGING_MODE_FRONT)){
+            listMessages.addAll(0,items);
+            int insertedCount = setDateDividerAndGetCount(0,items.size()-1);
+            if(isFirstPage){
+                TimeConverter timeConverter = new TimeConverter();
+                String firstTime = timeConverter.getDateForChatDivider(listMessages.get(0).getSentAt());
+                listMessages.add(0,makeDateDivider(firstTime));
+                notifyItemRangeInserted(0,insertedCount+1);
+            }else{
+                notifyItemRangeInserted(0,insertedCount);
+            }
+
+
+        }else if(pagingMode.equals(PAGING_MODE_BACK)){
+            int positionStart = listMessages.size();
+            listMessages.addAll(items);
+            int insertedCount = setDateDividerAndGetCount(positionStart-1,listMessages.size()-1);
+            notifyItemRangeInserted(positionStart,insertedCount);
+        }
+    }
+
+    public int setDateDividerAndGetCount(int firstPosition, int lastPosition){
+        Log.d("chat","firstPosition : "+firstPosition+" lastPosition : "+lastPosition);
+        if(firstPosition>=lastPosition){
+            return 0;
+        }
+
+        TimeConverter timeConverter = new TimeConverter();
+        int count = 0;
+        for(int i = lastPosition;i>=firstPosition;i--){
+            if(i+1 <= listMessages.size()-1){
+                String before = listMessages.get(i).getSentAt();
+                String after = listMessages.get(i+1).getSentAt();
+                if(timeConverter.isDifferentDay(before,after)){
+                    Log.d("chat","before : "+before+" after : "+after);
+                    String dateDivider = timeConverter.getDateForChatDivider(after);
+                    ChatMessage chatMessage = makeDateDivider(dateDivider);
+                    listMessages.add(i+1,chatMessage);
+                    count++;
+                }
+
+            }
+        }
+        Log.d("chat","last : "+lastPosition+" first : "+firstPosition+ " count : "+count);
+
+        return lastPosition - firstPosition + count + 1;
+    }
+
+    private ChatMessage makeDateDivider(String content){
+        return new ChatMessage(ChatMessage.TYPE_CENTER,content);
     }
 
 
@@ -103,18 +173,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyItemInserted(newPosition);
     }
 
-    public void updatePagedMessages(ArrayList<ChatMessage> items,String pagingMode){
-        int itemSize = items.size();
-        if(pagingMode.equals(PAGING_MODE_FRONT)){
-            listMessages.addAll(0,items);
-            notifyItemRangeInserted(0,itemSize);
+    public void updateMyItem(ChatMessage chatMessage){
+        String chatId = chatMessage.getSentAt();
 
-        }else if(pagingMode.equals(PAGING_MODE_BACK)){
-            int positionStart = listMessages.size();
-            listMessages.addAll(items);
-            notifyItemRangeInserted(positionStart,itemSize);
+        for(int i = listMessages.size()-1;i>=0;i--){
+            Log.d("chat","chatId : "+listMessages.get(i).getSentAt());
+            if(listMessages.get(i).getSentAt() != null && listMessages.get(i).getSentAt().equals(chatId)){
+                listMessages.set(i,chatMessage);
+                notifyItemChanged(i);
+                break;
+            }
         }
     }
+
+
 
     public void updateIsRead(){
         int positionStart = 0;
@@ -140,7 +212,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         int fromId = listMessages.get(position).getFromId();
-        Log.d("chat","getItemViewType FromID : "+fromId);
+
+        if(listMessages.get(position).getMsgType().equals(ChatMessage.TYPE_CENTER)){
+            return VIEW_TYPE_CENTER;
+        }
 
         if(userId == fromId){
             return VIEW_TYPE_MINE;
@@ -164,6 +239,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    private void setMessageTime(TextView textView,String utcTime){
+        TimeConverter timeConverter = new TimeConverter();
+        textView.setText(timeConverter.getTime(utcTime));
+    }
+
     public class MineViewHolder extends RecyclerView.ViewHolder{
         private ItemChatMineAdapterBinding binding;
 
@@ -181,8 +261,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public OpponentViewHolder(ItemChatOpponentAdapterBinding binding){
             super(binding.getRoot());
             this.binding = binding;
+        }
+    }
 
+    public class CenterViewHolder extends RecyclerView.ViewHolder{
+        private ItemChatCenterAdapterBinding binding;
 
+        public CenterViewHolder(ItemChatCenterAdapterBinding binding){
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

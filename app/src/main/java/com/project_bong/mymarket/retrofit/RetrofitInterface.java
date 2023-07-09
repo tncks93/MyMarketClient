@@ -78,4 +78,7 @@ public interface RetrofitInterface {
 
     @GET("chat/get_messages_paging.php")
     Call<JsonObject> callChatMessagesPaging(@Query("room_id") int roomId, @Query("page_idx") String pageIdx, @Query("paging_mode") String pagingMode);
+
+    @GET("chat/get_goods_for_chat.php")
+    Call<Goods> callGoodsForChat(@Query("room_id") int roomId);
 }

@@ -85,9 +85,12 @@ public class ChatFragment extends Fragment {
         roomsAdapter.setOnItemClickListener(new ChatRoomsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int pos) {
-                int roomId = roomsAdapter.getItem(pos).getRoomId();
+                ChatRoom chatRoom = roomsAdapter.getItem(pos);
+                Log.d("chat","roomInfo -> "+new Gson().toJson(chatRoom).toString());
+                int roomId = chatRoom.getRoomId();
                 Intent intent = new Intent(getContext(),ChatRoomActivity.class);
                 intent.putExtra("roomId",roomId);
+                intent.putExtra("opName",chatRoom.getOpName());
                 startActivity(intent);
             }
         });
