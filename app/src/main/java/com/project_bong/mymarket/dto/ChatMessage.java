@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class ChatMessage {
     public static final String TYPE_TEXT = "text";
+    public static final String TYPE_IMAGE = "image";
     public static final String TYPE_CENTER = "center";
 
 

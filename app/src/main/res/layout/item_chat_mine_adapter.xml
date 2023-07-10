@@ -6,27 +6,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
-    <TextView
-        android:id="@+id/txt_message_chat_mine"
+    <LinearLayout
+        android:id="@+id/layout_content_chat_mine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:minWidth="30dp"
-        android:maxWidth="200dp"
-        android:background="@drawable/chat_box_mine"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:gravity="end|center"
-        tools:text="가나다"
-        />
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:id="@+id/txt_message_chat_mine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:minWidth="30dp"
+            android:maxWidth="200dp"
+            android:background="@drawable/chat_box_mine"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:gravity="end|center"
+            tools:text="가나다"
+
+
+            />
+        <ImageView
+            android:id="@+id/img_message_chat_mine"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:maxWidth="200dp"
+            android:adjustViewBounds="true"
+            tools:src="@drawable/user_default"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/txt_created_at_chat_mine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/txt_message_chat_mine"
-        app:layout_constraintEnd_toStartOf="@id/txt_message_chat_mine"
+        app:layout_constraintBottom_toBottomOf="@id/layout_content_chat_mine"
+        app:layout_constraintEnd_toStartOf="@id/layout_content_chat_mine"
         tools:text="오후 7:30"
         android:layout_marginEnd="5dp"
         android:textSize="12sp"/>
@@ -35,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/txt_created_at_chat_mine"
-        app:layout_constraintEnd_toStartOf="@id/txt_message_chat_mine"
+        app:layout_constraintEnd_toStartOf="@id/layout_content_chat_mine"
         android:text="1"
         android:textSize="12sp"
         android:layout_marginEnd="5dp"

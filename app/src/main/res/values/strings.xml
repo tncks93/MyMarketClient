@@ -122,6 +122,11 @@
     //채팅 strings
     <string name="str_send_money_chat">송금하기</string>
     <string name="str_hint_send_chat">메시지를 입력해 주세요</string>
+    <string-array name="array_image_send_chat">
+        <item>카메라</item>
+        <item>갤러리</item>
+    </string-array>
+    <string name="str_message_for_image">사진을 보냈습니다</string>
 
 
 </resources>

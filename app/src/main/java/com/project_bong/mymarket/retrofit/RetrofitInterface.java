@@ -46,6 +46,7 @@ public interface RetrofitInterface {
     @GET("goods/get_goods.php")
     Call<Goods> callGoods(@Query("goods_id") int goodsId);
 
+
     @GET("goods/get_goods_list.php")
     Call<ArrayList<Goods>> callGoodsList(@Query("page_idx") int pageIdx);
 
@@ -81,4 +82,8 @@ public interface RetrofitInterface {
 
     @GET("chat/get_goods_for_chat.php")
     Call<Goods> callGoodsForChat(@Query("room_id") int roomId);
+
+    @Multipart
+    @POST("chat/save_images.php")
+    Call<ArrayList<ChatMessage>> callSaveImagesForChat(@Part("chats") RequestBody chats, @Part List<MultipartBody.Part> images);
 }

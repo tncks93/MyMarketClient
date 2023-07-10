@@ -14,28 +14,48 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
-    <TextView
-        android:id="@+id/txt_message_chat_opponent"
+    <LinearLayout
+        android:id="@+id/layout_content_chat_opponent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/img_profile_chat_opponent"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:minWidth="30dp"
-        android:maxWidth="200dp"
-        android:background="@drawable/chat_box_opponent"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        tools:text="가나다"
-        android:gravity="start|center"
-        />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_profile_chat_opponent"
+        >
+        <TextView
+            android:id="@+id/txt_message_chat_opponent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/img_profile_chat_opponent"
+            android:minWidth="30dp"
+            android:maxWidth="200dp"
+            android:background="@drawable/chat_box_opponent"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:text="가나다"
+            android:gravity="start|center"
+
+            />
+        <ImageView
+            android:id="@+id/img_message_chat_opponent"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            tools:src="@drawable/user_default"
+            android:visibility="gone"
+            />
+
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/txt_created_at_chat_opponent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/txt_message_chat_opponent"
-        app:layout_constraintStart_toEndOf="@id/txt_message_chat_opponent"
+        app:layout_constraintBottom_toBottomOf="@id/layout_content_chat_opponent"
+        app:layout_constraintStart_toEndOf="@id/layout_content_chat_opponent"
         tools:text="오후 7:30"
         android:layout_marginStart="5dp"
         android:textSize="12sp"/>

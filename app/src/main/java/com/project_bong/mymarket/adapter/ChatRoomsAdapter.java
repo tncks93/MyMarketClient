@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.databinding.ItemChatRoomsAdapterBinding;
+import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.retrofit.RetrofitClientInstance;
 import com.project_bong.mymarket.retrofit.RetrofitInterface;
@@ -29,7 +31,6 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
     private ArrayList<ChatRoom> roomsList;
     private Context mContext;
 
-    private final String MSG_TYPE_TEXT = "text";
 
     public interface OnItemClickListener {
         void onItemClick(View v, int pos);
@@ -89,9 +90,13 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
         holder.binding.txtOpponentNameChat.setText(chatRoom.getOpName());
 
         switch(chatRoom.getLastMessageType()){
-            case  MSG_TYPE_TEXT:
+            case  ChatMessage.TYPE_TEXT:
                 holder.binding.txtLastMessageChat.setText(chatRoom.getLastMessage());
             break;
+
+            case ChatMessage.TYPE_IMAGE:
+                holder.binding.txtLastMessageChat.setText(mContext.getString(R.string.str_message_for_image));
+                break;
 
           default:
             break;

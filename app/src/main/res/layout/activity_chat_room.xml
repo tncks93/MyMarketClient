@@ -132,10 +132,12 @@
         android:paddingBottom="8dp"
         >
         <ImageView
+            android:id="@+id/btn_send_image_chat_room"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:src="@drawable/ic_add_photo"
             android:layout_gravity="center"
+            android:background="?attr/selectableItemBackground"
             />
 
         <EditText
@@ -155,6 +157,7 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_send_chat"
             android:layout_gravity="center"
+            android:background="?attr/selectableItemBackground"
 
             />
 

@@ -5,10 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,7 +18,6 @@ import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.util.LoginUserGetter;
 import com.project_bong.mymarket.util.TimeConverter;
 
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -78,14 +75,31 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if(holder instanceof MineViewHolder){
             //switch 문으로 msg type별로 나눠야 함.
-            ((MineViewHolder) holder).binding.txtMessageChatMine.setText(chatMessage.getContent());
+            switch (chatMessage.getMsgType()) {
+                case ChatMessage.TYPE_TEXT:
+                    Glide.with(mContext).clear(((MineViewHolder) holder).binding.imgMessageChatMine);
+                    ((MineViewHolder) holder).binding.imgMessageChatMine.setVisibility(View.GONE);
+                    ((MineViewHolder) holder).binding.txtMessageChatMine.setVisibility(View.VISIBLE);
+                    ((MineViewHolder) holder).binding.txtMessageChatMine.setText(chatMessage.getContent());
+                    break;
+
+                case ChatMessage.TYPE_IMAGE:
+                    Glide.with(mContext).load(chatMessage.getContent()).into(((MineViewHolder) holder).binding.imgMessageChatMine);
+                    ((MineViewHolder) holder).binding.txtMessageChatMine.setVisibility(View.GONE);
+                    ((MineViewHolder) holder).binding.imgMessageChatMine.setVisibility(View.VISIBLE);
+                    break;
+
+                default:
+                    break;
+            }
+
             if(chatMessage.getIsRead() == 0){
                 ((MineViewHolder) holder).binding.txtIsReadChatMine.setVisibility(View.VISIBLE);
             }else if(chatMessage.getIsRead() == 1){
                 ((MineViewHolder) holder).binding.txtIsReadChatMine.setVisibility(View.GONE);
             }
 
-            setMessageTime(((MineViewHolder) holder).binding.txtCreatedAtChatMine, chatMessage.getSentAt());
+            ((MineViewHolder) holder).binding.txtCreatedAtChatMine.setText(getMessageTime(chatMessage.getSentAt()));
 
 
         }else if(holder instanceof OpponentViewHolder){
@@ -93,9 +107,25 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(((OpponentViewHolder) holder).binding.imgProfileChatOpponent);
 
-            ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setText(chatMessage.getContent());
+            switch (chatMessage.getMsgType()) {
+                case ChatMessage.TYPE_TEXT:
+                    Glide.with(mContext).clear(((OpponentViewHolder) holder).binding.imgMessageChatOpponent);
+                    ((OpponentViewHolder) holder).binding.imgMessageChatOpponent.setVisibility(View.GONE);
+                    ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setVisibility(View.VISIBLE);
+                    ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setText(chatMessage.getContent());
+                    break;
 
-            setMessageTime(((OpponentViewHolder) holder).binding.txtCreatedAtChatOpponent, chatMessage.getSentAt());
+                case ChatMessage.TYPE_IMAGE:
+                    Glide.with(mContext).load(chatMessage.getContent()).into(((OpponentViewHolder) holder).binding.imgMessageChatOpponent);
+                    ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setVisibility(View.GONE);
+                    ((OpponentViewHolder) holder).binding.imgMessageChatOpponent.setVisibility(View.VISIBLE);
+                    break;
+
+                default:
+                    break;
+            }
+
+            ((OpponentViewHolder) holder).binding.txtCreatedAtChatOpponent.setText(getMessageTime(chatMessage.getSentAt()));
         }else if(holder instanceof CenterViewHolder){
             ((CenterViewHolder) holder).binding.txtDividerDate.setText(chatMessage.getContent());
         }
@@ -239,9 +269,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    private void setMessageTime(TextView textView,String utcTime){
+    private String getMessageTime(String utcTime){
         TimeConverter timeConverter = new TimeConverter();
-        textView.setText(timeConverter.getTime(utcTime));
+        return timeConverter.getTime(utcTime);
     }
 
     public class MineViewHolder extends RecyclerView.ViewHolder{
