@@ -127,6 +127,7 @@
         <item>갤러리</item>
     </string-array>
     <string name="str_message_for_image">사진을 보냈습니다</string>
+    <string name="str_bookmark_for_chat">여기까지 읽었습니다</string>
 
 
 </resources>

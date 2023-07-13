@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -164,7 +165,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initMessageAdapter();
-//        getGoodsInfo();
+        getGoodsInfo();
 //        getRoomInfo();
         getFirstMessages();
 
@@ -258,6 +259,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Glide.with(getBaseContext()).load(goods.getMainImage()).circleCrop().into(binding.imgGoodsChatRoom);
                     binding.txtGoodsNameChatRoom.setText(goods.getName());
                     binding.txtGoodsStateChatRoom.setText(goods.getState());
+                    binding.txtGoodsPriceChatRoom.setText(goods.getPrice()+"원");
                 }
             }
 
@@ -305,10 +307,18 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Type typeList = new TypeToken<ArrayList<ChatMessage>>(){}.getType();
                     ArrayList<ChatMessage> firstMessages = new Gson().fromJson(jsonResponse.get("messages").getAsJsonArray().toString(),typeList);
                     messageAdapter.addFirstItems(firstMessages);
+                    Log.d("chat","bookmark : "+bookMark);
                     if(bookMark == null){
                         binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
                     }else{
                         //bookMark 위치로 스크롤
+                        int bookMarkPosition = messageAdapter.addBookMark(bookMark);
+                        if(bookMarkPosition != -1){
+                            Log.d("chat","bookMarkPos : "+bookMarkPosition);
+                            binding.recyclerMessageChatRoom.scrollToPosition(bookMarkPosition);
+                        }else{
+                            binding.recyclerMessageChatRoom.scrollToPosition(messageAdapter.getItemCount()-1);
+                        }
                     }
                 }
 

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.databinding.ItemChatCenterAdapterBinding;
 import com.project_bong.mymarket.databinding.ItemChatMineAdapterBinding;
 import com.project_bong.mymarket.databinding.ItemChatOpponentAdapterBinding;
@@ -18,6 +19,7 @@ import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.util.LoginUserGetter;
 import com.project_bong.mymarket.util.TimeConverter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -84,7 +86,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
 
                 case ChatMessage.TYPE_IMAGE:
-                    Glide.with(mContext).load(chatMessage.getContent()).into(((MineViewHolder) holder).binding.imgMessageChatMine);
+                    Glide.with(mContext).load(chatMessage.getContent()).dontAnimate().into(((MineViewHolder) holder).binding.imgMessageChatMine);
                     ((MineViewHolder) holder).binding.txtMessageChatMine.setVisibility(View.GONE);
                     ((MineViewHolder) holder).binding.imgMessageChatMine.setVisibility(View.VISIBLE);
                     break;
@@ -116,7 +118,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
 
                 case ChatMessage.TYPE_IMAGE:
-                    Glide.with(mContext).load(chatMessage.getContent()).into(((OpponentViewHolder) holder).binding.imgMessageChatOpponent);
+                    Glide.with(mContext).load(chatMessage.getContent()).dontAnimate().into(((OpponentViewHolder) holder).binding.imgMessageChatOpponent);
                     ((OpponentViewHolder) holder).binding.txtMessageChatOpponent.setVisibility(View.GONE);
                     ((OpponentViewHolder) holder).binding.imgMessageChatOpponent.setVisibility(View.VISIBLE);
                     break;
@@ -143,6 +145,32 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    public int addBookMark(String bookMark){
+        int bookMarkPosition = -1;
+        TimeConverter timeConverter = new TimeConverter();
+        LocalDateTime bookMarkTime = timeConverter.convertUTCtoLocal(bookMark);
+        for(int i=getItemCount()-1;i>=0;i--){
+            if(listMessages.get(i).getSentAt()!=null){
+                LocalDateTime sentAt = timeConverter.convertUTCtoLocal(listMessages.get(i).getSentAt());
+                if(sentAt.isBefore(bookMarkTime)){
+                    bookMarkPosition = i+1;
+                    break;
+                }
+
+            }
+        }
+        if(bookMarkPosition >= listMessages.size()){
+            return -1;
+        }
+
+        listMessages.add(bookMarkPosition,markCenterViewHolder(mContext.getString(R.string.str_bookmark_for_chat)));
+        notifyItemInserted(bookMarkPosition);
+
+
+
+        return bookMarkPosition;
+    }
+
     public void updatePagedMessages(ArrayList<ChatMessage> items, String pagingMode,boolean isFirstPage){
         if(pagingMode.equals(PAGING_MODE_FRONT)){
             listMessages.addAll(0,items);
@@ -150,7 +178,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if(isFirstPage){
                 TimeConverter timeConverter = new TimeConverter();
                 String firstTime = timeConverter.getDateForChatDivider(listMessages.get(0).getSentAt());
-                listMessages.add(0,makeDateDivider(firstTime));
+                listMessages.add(0, markCenterViewHolder(firstTime));
                 notifyItemRangeInserted(0,insertedCount+1);
             }else{
                 notifyItemRangeInserted(0,insertedCount);
@@ -180,7 +208,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if(timeConverter.isDifferentDay(before,after)){
                     Log.d("chat","before : "+before+" after : "+after);
                     String dateDivider = timeConverter.getDateForChatDivider(after);
-                    ChatMessage chatMessage = makeDateDivider(dateDivider);
+                    ChatMessage chatMessage = markCenterViewHolder(dateDivider);
                     listMessages.add(i+1,chatMessage);
                     count++;
                 }
@@ -192,7 +220,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return lastPosition - firstPosition + count + 1;
     }
 
-    private ChatMessage makeDateDivider(String content){
+    private ChatMessage markCenterViewHolder(String content){
         return new ChatMessage(ChatMessage.TYPE_CENTER,content);
     }
 

@@ -15,7 +15,7 @@ public class Goods {
 
     public static final String STATE_ON_SAIL = "판매중";
     public static final String STATE_RESERVED = "예약중";
-    public static final String STATE_SOLD_OUT = "판매완료";
+    public static final String STATE_SOLD_OUT = "거래완료";
 
     @SerializedName("goods_id")
     int id;
@@ -66,6 +66,7 @@ public class Goods {
     public String getName() {
         return name;
     }
+
 
     public User getSeller(){return seller;}
 
