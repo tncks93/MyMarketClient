@@ -1,20 +1,33 @@
 package com.project_bong.mymarket.splash;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.dto.LoginUser;
 import com.project_bong.mymarket.login.AuthActivity;
 import com.project_bong.mymarket.main.MainActivity;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.PermissionsGetter;
 import com.project_bong.mymarket.util.Shared;
 
 public class SplashActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

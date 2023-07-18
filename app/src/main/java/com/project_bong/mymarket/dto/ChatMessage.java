@@ -17,6 +17,9 @@ public class ChatMessage {
     @Expose
     private String opImage;
 
+    @SerializedName("op_name")
+    @Expose
+    private String opName;
 
     @SerializedName("from_id")
     private int fromId;

@@ -86,4 +86,8 @@ public interface RetrofitInterface {
     @Multipart
     @POST("chat/save_images.php")
     Call<ArrayList<ChatMessage>> callSaveImagesForChat(@Part("chats") RequestBody chats, @Part List<MultipartBody.Part> images);
+
+    @FormUrlEncoded
+    @POST("fcm/save_token.php")
+    Call<String> callSaveFcmToken(@Field("token") String token);
 }
