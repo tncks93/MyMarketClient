@@ -1,29 +1,18 @@
 package com.project_bong.mymarket.splash;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.core.app.TaskStackBuilder;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.project_bong.mymarket.R;
+import com.project_bong.mymarket.chat.ChatRoomActivity;
 import com.project_bong.mymarket.dto.LoginUser;
 import com.project_bong.mymarket.login.AuthActivity;
 import com.project_bong.mymarket.main.MainActivity;
 import com.project_bong.mymarket.util.LoginUserGetter;
-import com.project_bong.mymarket.util.PermissionsGetter;
 import com.project_bong.mymarket.util.Shared;
 
 public class SplashActivity extends AppCompatActivity {
@@ -47,7 +36,13 @@ public class SplashActivity extends AppCompatActivity {
                         return;
                     }
                     shared.setSharedString(Shared.LOGIN_KEY,loginUser.getSessId());
-                    startMainActivity();
+
+                    String launchMode = getIntent().getStringExtra("launchMode");
+                    if(launchMode != null && launchMode.equals("CHAT")){
+                        startChatActivity(getIntent());
+                    }else{
+                        startMainActivity();
+                    }
 
                 }
 
@@ -75,6 +70,25 @@ public class SplashActivity extends AppCompatActivity {
     private void startMainActivity(){
 
         startActivity(new Intent(getBaseContext(), MainActivity.class));
+        finish();
+    }
+
+    private void startChatActivity(Intent intent){
+        int roomId = intent.getIntExtra("roomId",0);
+        String opName = intent.getStringExtra("opName");
+
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        mainIntent.putExtra("fragmentId",3);
+
+        Intent chatIntent = new Intent(this, ChatRoomActivity.class);
+        chatIntent.putExtra("roomId",roomId);
+        chatIntent.putExtra("opName",opName);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getBaseContext());
+        stackBuilder.addNextIntentWithParentStack(mainIntent);
+        stackBuilder.addNextIntent(chatIntent);
+
+        stackBuilder.startActivities();
         finish();
     }
 }

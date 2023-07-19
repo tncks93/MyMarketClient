@@ -62,22 +62,15 @@ public class MainActivity extends AppCompatActivity {
         askNotificationPermission();
         saveFCMToken();
 
-        setFragmentManager();
-
-
-
-
-
+        setFragmentManager(getIntent().getIntExtra("fragmentId",0));
 
     }
 
-    private void setFragmentManager(){
+    private void setFragmentManager(int firstFragIndex){
         homeFragment = new HomeFragment();
         chatFragment = new ChatFragment();
         myPageFragment = new MyPageFragment();
         fm = getSupportFragmentManager();
-
-        fm.beginTransaction().replace(containerId,homeFragment).commit();
 
         binding.bottomNavMain.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -110,6 +103,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        fm.beginTransaction().replace(containerId,chatFragment).commit();
+        if(firstFragIndex == 3){
+            binding.bottomNavMain.setSelectedItemId(R.id.menu_action_chat);
+        }else{
+            binding.bottomNavMain.setSelectedItemId(R.id.menu_action_home);
+        }
 
 
     }
@@ -120,11 +119,14 @@ public class MainActivity extends AppCompatActivity {
         }
         fm.beginTransaction().remove(chatFragment).commit();
 
-            if(fragment.isAdded()){
-                fm.beginTransaction().show(fragment).commit();
-            }else{
-                fm.beginTransaction().add(containerId,fragment).show(fragment).commit();
-            }
+        if(fragment.isAdded()){
+            Log.d("frag","fragAdded : "+fragment.getId());
+            fm.beginTransaction().show(fragment).commit();
+        }else{
+            Log.d("frag","fragNotAdded : ");
+            fm.beginTransaction().add(containerId,fragment).show(fragment).commit();
+//            fm.beginTransaction().replace(containerId,fragment).show(fragment).commit();
+        }
     }
 
     private void askNotificationPermission(){
