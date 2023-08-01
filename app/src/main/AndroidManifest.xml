@@ -23,11 +23,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-<!--    알림 권한-->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 알림 권한 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".application.MyApplication"
@@ -41,6 +38,9 @@
         android:theme="@style/Theme.MyMarket"
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
+        <activity
+            android:name=".sale.SelectBuyerActivity"
+            android:exported="false" />
         <activity
             android:name=".chat.ChatRoomActivity"
             android:exported="false" />
@@ -86,10 +86,10 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_icon"
                 android:resource="@mipmap/ic_launcher" />
-
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_color"
                 android:resource="@color/colorPrimary" />

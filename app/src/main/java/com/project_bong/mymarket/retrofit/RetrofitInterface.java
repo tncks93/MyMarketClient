@@ -7,6 +7,7 @@ import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.dto.Goods;
 import com.project_bong.mymarket.dto.LoginUser;
+import com.project_bong.mymarket.dto.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,4 +91,11 @@ public interface RetrofitInterface {
     @FormUrlEncoded
     @POST("fcm/save_token.php")
     Call<String> callSaveFcmToken(@Field("token") String token);
+
+    @GET("goods/get_buyer_list.php")
+    Call<ArrayList<User>> callBuyerList(@Query("goods_id") int goodsId);
+
+    @FormUrlEncoded
+    @POST("goods/save_purchase.php")
+    Call<String> callSavePurchase(@Field("buyer_id") int buyerId, @Field("goods_id") int goodsId);
 }

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.TaskStackBuilder;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.JsonObject;
@@ -26,6 +27,8 @@ import com.project_bong.mymarket.util.LoginUserGetter;
 import com.project_bong.mymarket.util.TimeConverter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -161,24 +164,51 @@ public class GoodsActivity extends AppCompatActivity {
         }
 
         private void changeState(){
+
+            List<String> listState = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.array_list_goods_state)));
+            int currentStatePosition = -1;
+            for(int i=0;i<listState.size();i++){
+                if(listState.get(i).equals(goods.getState())){
+                    currentStatePosition = i;
+                    break;
+                }
+            }
+
+            Log.d("state","size : "+listState.size()+" current : "+currentStatePosition);
+
+            if(currentStatePosition != -1){
+                listState.remove(currentStatePosition);
+            }
+            String[] arrayState = listState.toArray(new String[listState.size()]);
+
+
             AlertDialog.Builder builder = new AlertDialog.Builder(GoodsActivity.this)
                     .setTitle(getString(R.string.str_change_state_goods))
-                    .setItems(getResources().getStringArray(R.array.array_list_goods_state), new DialogInterface.OnClickListener() {
+                    .setItems(arrayState, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String[] stateArray = getResources().getStringArray(R.array.array_list_goods_state);
                             RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
-                            Call<String> callChangeState = retrofit.callChangeState(goodsId,stateArray[which]);
+                            Call<String> callChangeState = retrofit.callChangeState(goodsId,arrayState[which]);
                             callChangeState.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
                                     if(response.body() != null){
                                         if(response.body().equals("success")){
-                                            Intent intent = new Intent(getBaseContext(),GoodsActivity.class);
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            intent.putExtra("goodsId",goodsId);
-                                            startActivity(intent);
-                                            Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
+                                            Intent goodsIntent = new Intent(getBaseContext(),GoodsActivity.class);
+                                            goodsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            goodsIntent.putExtra("goodsId",goodsId);
+
+                                            if(arrayState[which].equals(Goods.STATE_SOLD_OUT)){
+                                                Intent selectBuyerIntent = new Intent(getBaseContext(), SelectBuyerActivity.class);
+                                                selectBuyerIntent.putExtra("goodsId",goodsId);
+
+                                                startActivities(new Intent[]{goodsIntent,selectBuyerIntent});
+                                            }else{
+                                                startActivity(goodsIntent);
+                                                Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            //구매자 선택 Activity 추가해야 함
                                         }
                                     }
                                 }
@@ -261,7 +291,6 @@ public class GoodsActivity extends AppCompatActivity {
                         Intent intent = new Intent(getBaseContext(),ChatRoomActivity.class);
                         intent.putExtra("roomId",roomId);
                         startActivity(intent);
-
 
                     }
                     Log.d("chat","onResponse");

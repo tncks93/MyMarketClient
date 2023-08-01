@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:paddingStart="@dimen/layout_default_padding_start_end"
             android:paddingEnd="@dimen/layout_default_padding_start_end"
-            android:paddingTop="10dp"
+            android:paddingTop="20dp"
             android:paddingBottom="10dp"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -75,7 +75,65 @@
                 app:layout_constraintTop_toBottomOf="@id/layout_user_profile_my_page"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
+                />
+                <Button
+                    android:id="@+id/btn_sales_history_my_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/divider_for_user_profile_my_page"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_purchase_history_my_page"
+
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/btn_rounded"
+                    android:drawableTop="@drawable/ic_sales_history"
+                    android:text="@string/str_sales_history"
+                    android:textColor="@color/black"
+                    />
+                <Button
+                    android:id="@+id/btn_purchase_history_my_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintStart_toEndOf="@id/btn_sales_history_my_page"
+                    app:layout_constraintEnd_toStartOf="@id/btn_interest_goods_my_page"
+                    app:layout_constraintTop_toBottomOf="@id/divider_for_user_profile_my_page"
+                    android:drawableTop="@drawable/ic_purchase_history"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/btn_rounded"
+                    android:text="@string/str_purchase_history"
+                    android:textColor="@color/black"
+                    />
+                <Button
+                    android:id="@+id/btn_interest_goods_my_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/divider_for_user_profile_my_page"
+                    app:layout_constraintStart_toEndOf="@id/btn_purchase_history_my_page"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:drawableTop="@drawable/ic_interest_goods"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/btn_rounded"
+                    android:text="@string/str_interest_goods"
+                    android:textColor="@color/black"
+                    />
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider_for_set_user_my_page"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@id/btn_purchase_history_my_page"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="20dp"
                 />
 
 
