@@ -49,6 +49,11 @@ public class MyPageFragment extends Fragment {
             Intent intent = new Intent(getActivity(),UpdateUserActivity.class);
             getResultFromUpdatingUser.launch(intent);
         });
+
+        binding.btnSalesHistoryMyPage.setOnClickListener(v->{
+            Intent intent = new Intent(getActivity(),SalesHistoryActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void setUserProfile(){

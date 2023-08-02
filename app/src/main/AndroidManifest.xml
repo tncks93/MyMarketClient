@@ -39,6 +39,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
+            android:name=".my_page.SalesHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".sale.SelectBuyerActivity"
             android:exported="false" />
         <activity

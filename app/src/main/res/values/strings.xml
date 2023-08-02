@@ -95,6 +95,7 @@
     <string name="str_empty_buyer_select_buyer">최근 대화한 사용자가 없습니다</string>
     <string name="str_title_select_buyer">구매자 선택</string>
     <string name="str_not_select_buyer">선택하지 않을래요</string>
+    <string name="str_attention_cancel_sold_out">상태를 변경하면 상대방과의 거래가 취소됩니다. 그래도 변경하시겠습니까?</string>
 
     //main title strings
     <string name="str_title_home">전체보기</string>
@@ -135,6 +136,8 @@
     </string-array>
     <string name="str_message_for_image">사진을 보냈습니다</string>
     <string name="str_bookmark_for_chat">여기까지 읽었습니다</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

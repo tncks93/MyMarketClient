@@ -12,10 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.TaskStackBuilder;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.JsonObject;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.adapter.GoodsImagePagerAdapter;
 import com.project_bong.mymarket.chat.ChatRoomActivity;
@@ -144,7 +142,7 @@ public class GoodsActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_change_state_goods:
                     //상품상태변경
-                    changeState();
+                    readyForChangeState();
                     break;
                 case R.id.btn_delete_goods:
                     //상품삭제
@@ -163,7 +161,7 @@ public class GoodsActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        private void changeState(){
+        private void readyForChangeState(){
 
             List<String> listState = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.array_list_goods_state)));
             int currentStatePosition = -1;
@@ -187,40 +185,58 @@ public class GoodsActivity extends AppCompatActivity {
                     .setItems(arrayState, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
-                            Call<String> callChangeState = retrofit.callChangeState(goodsId,arrayState[which]);
-                            callChangeState.enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    if(response.body() != null){
-                                        if(response.body().equals("success")){
-                                            Intent goodsIntent = new Intent(getBaseContext(),GoodsActivity.class);
-                                            goodsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            goodsIntent.putExtra("goodsId",goodsId);
-
-                                            if(arrayState[which].equals(Goods.STATE_SOLD_OUT)){
-                                                Intent selectBuyerIntent = new Intent(getBaseContext(), SelectBuyerActivity.class);
-                                                selectBuyerIntent.putExtra("goodsId",goodsId);
-
-                                                startActivities(new Intent[]{goodsIntent,selectBuyerIntent});
-                                            }else{
-                                                startActivity(goodsIntent);
-                                                Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
+                            //if 현재 state "거래완료"일 때 주의
+                            String state = arrayState[which];
+                            if(goods.getState().equals(Goods.STATE_SOLD_OUT)){
+                                AlertDialog.Builder attentionDialogBuilder = new AlertDialog.Builder(GoodsActivity.this)
+                                        .setMessage(getString(R.string.str_attention_cancel_sold_out))
+                                        .setPositiveButton("변경하기", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                changeState(state,true);
                                             }
-
-                                            //구매자 선택 Activity 추가해야 함
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                    RetrofitClientInstance.setOnFailure(getBaseContext(),t);
-                                }
-                            });
+                                        })
+                                        .setNegativeButton("취소",null);
+                                attentionDialogBuilder.show();
+                            }else{
+                                changeState(state,false);
+                            }
                         }
                     });
             builder.show();
+        }
+
+        private void changeState(String state,boolean isSoldOut){
+            Log.d("changeState","state : "+state+ " isSoldOut : "+isSoldOut);
+            RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+            Call<String> callChangeState = retrofit.callChangeState(goodsId,state,isSoldOut);
+            callChangeState.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.body() != null){
+                        if(response.body().equals("success")){
+                            Intent goodsIntent = new Intent(getBaseContext(),GoodsActivity.class);
+                            goodsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            goodsIntent.putExtra("goodsId",goodsId);
+
+                            if(state.equals(Goods.STATE_SOLD_OUT)){
+                                Intent selectBuyerIntent = new Intent(getBaseContext(), SelectBuyerActivity.class);
+                                selectBuyerIntent.putExtra("goodsId",goodsId);
+
+                                startActivities(new Intent[]{goodsIntent,selectBuyerIntent});
+                            }else{
+                                startActivity(goodsIntent);
+                                Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+                }
+            });
         }
 
         private void deleteGoods(){

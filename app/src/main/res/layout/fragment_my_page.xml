@@ -84,7 +84,6 @@
                     app:layout_constraintTop_toBottomOf="@id/divider_for_user_profile_my_page"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btn_purchase_history_my_page"
-
                     android:layout_marginTop="20dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"

@@ -53,7 +53,7 @@ public interface RetrofitInterface {
 
     @FormUrlEncoded
     @POST("goods/change_state.php")
-    Call<String> callChangeState(@Field("goods_id") int goodsId,@Field("state") String state);
+    Call<String> callChangeState(@Field("goods_id") int goodsId,@Field("state") String state,@Field("is_sold_out") boolean isSoldOut);
 
     @FormUrlEncoded
     @POST("goods/delete_goods.php")
@@ -98,4 +98,7 @@ public interface RetrofitInterface {
     @FormUrlEncoded
     @POST("goods/save_purchase.php")
     Call<String> callSavePurchase(@Field("buyer_id") int buyerId, @Field("goods_id") int goodsId);
+
+    @GET("my_page/get_sales.php")
+    Call<ArrayList<Goods>> callGetSales(@Query("state") String state);
 }
