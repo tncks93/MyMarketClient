@@ -51,8 +51,16 @@ public class MyPageFragment extends Fragment {
         });
 
         binding.btnSalesHistoryMyPage.setOnClickListener(v->{
+            //판매내역 Activity
             Intent intent = new Intent(getActivity(),SalesHistoryActivity.class);
             startActivity(intent);
+        });
+
+        binding.btnPurchaseHistoryMyPage.setOnClickListener(v->{
+            //구매내역
+            Intent intent = new Intent(getActivity(),PurchaseActivity.class);
+            startActivity(intent);
+
         });
     }
 

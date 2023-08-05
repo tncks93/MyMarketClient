@@ -16,33 +16,38 @@ import com.project_bong.mymarket.dto.Goods;
 
 import java.util.ArrayList;
 
-public class SalesListAdapter extends RecyclerView.Adapter<SalesListAdapter.ViewHolder> {
+public class PurchaseListAdapter extends RecyclerView.Adapter<PurchaseListAdapter.ViewHolder> {
+    private ArrayList<Goods> listGoods;
     private Context mContext;
-    private ArrayList<Goods> listSales;
 
     public interface OnItemClickListener {
         void onItemClick(View v, int pos);
+        void onMoreClick(View v, int pos);
     }
-    private OnItemClickListener mListener = null;
+    private OnItemClickListener mViewClickListener = null;
+
 
     public void setOnItemClickListener(OnItemClickListener listener){
-        this.mListener = listener;
+        this.mViewClickListener = listener;
     }
 
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         final ItemGoodsAdapterBinding binding;
+
         public ViewHolder(ItemGoodsAdapterBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mListener != null){
-                        mListener.onItemClick(v,getAdapterPosition());
-                    }
+            binding.getRoot().setOnClickListener(v->{
+                if(mViewClickListener != null){
+                    mViewClickListener.onItemClick(v,getAdapterPosition());
+                }
+            });
+
+            binding.btnMoreItemGoods.setOnClickListener(v->{
+                if(mViewClickListener != null){
+                    mViewClickListener.onMoreClick(v,getAdapterPosition());
                 }
             });
 
@@ -51,8 +56,8 @@ public class SalesListAdapter extends RecyclerView.Adapter<SalesListAdapter.View
 
     }
 
-    public SalesListAdapter(ArrayList<Goods> items){
-        listSales = items;
+    public PurchaseListAdapter(ArrayList<Goods> items){
+        listGoods = items;
     }
 
 
@@ -64,11 +69,13 @@ public class SalesListAdapter extends RecyclerView.Adapter<SalesListAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(SalesListAdapter.ViewHolder holder, int position) {
-        Goods goods = listSales.get(position);
+    public void onBindViewHolder(PurchaseListAdapter.ViewHolder holder, int position) {
+        holder.binding.btnMoreItemGoods.setVisibility(View.VISIBLE);
+
+        Goods goods = listGoods.get(position);
 
         Glide.with(mContext).load(goods.getMainImage()).transform(new CenterCrop(),new RoundedCorners(20))
-                        .into(holder.binding.imgItemGoods);
+                .into(holder.binding.imgItemGoods);
 
         holder.binding.txtCategoryItemGoods.setText(goods.getCategory());
         holder.binding.txtNameItemGoods.setText(goods.getName());
@@ -85,31 +92,37 @@ public class SalesListAdapter extends RecyclerView.Adapter<SalesListAdapter.View
 
     }
 
-    @Override
-    public int getItemCount() {
-        return listSales.size();
+    public void addItems(ArrayList<Goods> newItems){
+        int positionStart = getItemCount();
+        int itemSize = newItems.size();;
+
+        listGoods.addAll(newItems);
+        notifyItemRangeInserted(positionStart,itemSize);
     }
 
-    public void addItems(ArrayList<Goods> newItems,int pagingIdx){
-        if(pagingIdx == 0){
-            listSales.clear();
-        }
-        listSales.addAll(newItems);
-        notifyDataSetChanged();
+    @Override
+    public int getItemCount() {
+        return listGoods.size();
     }
 
     public Goods getItem(int position){
-        return listSales.get(position);
+        return listGoods.get(position);
+    }
+
+    public void removeItem(int position){
+        listGoods.remove(position);
+        notifyItemRemoved(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return listSales.get(position).getId();
+        return listGoods.get(position).getId();
     }
 
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        this.mContext = recyclerView.getContext();
+        mContext = recyclerView.getContext();
         super.onAttachedToRecyclerView(recyclerView);
+        
     }
 }

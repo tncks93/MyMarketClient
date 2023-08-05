@@ -226,8 +226,8 @@ public class GoodsActivity extends AppCompatActivity {
                                 startActivities(new Intent[]{goodsIntent,selectBuyerIntent});
                             }else{
                                 startActivity(goodsIntent);
-                                Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
                             }
+                            Toast.makeText(getBaseContext(),getString(R.string.str_success_change_state),Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

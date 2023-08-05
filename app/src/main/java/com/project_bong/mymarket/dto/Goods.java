@@ -106,7 +106,7 @@ public class Goods {
     }
 
     public String getCreatedAtForUser(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
         LocalDateTime dateTime = LocalDateTime.parse(this.createdAt,formatter);
         LocalDate date = dateTime.toLocalDate();
         LocalDate today = LocalDate.now();

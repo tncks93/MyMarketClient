@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".my_page.PurchaseActivity">
+    <include layout="@layout/actionbar_default"
+        android:id="@+id/toolbar_purchase"/>
+    <TextView
+        android:id="@+id/txt_have_no_purchases"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/str_have_no_purchase_history"
+        android:textSize="20sp"
+        android:visibility="gone"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_purchase"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="@dimen/layout_default_padding_start_end"
+        android:paddingEnd="@dimen/layout_default_padding_start_end"
+        />
+
+</LinearLayout>

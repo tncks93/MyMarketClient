@@ -100,5 +100,12 @@ public interface RetrofitInterface {
     Call<String> callSavePurchase(@Field("buyer_id") int buyerId, @Field("goods_id") int goodsId);
 
     @GET("my_page/get_sales.php")
-    Call<ArrayList<Goods>> callGetSales(@Query("state") String state);
+    Call<ArrayList<Goods>> callGetSales(@Query("state") String state,@Query("paging_idx") int pagingIdx);
+
+    @GET("my_page/get_purchase.php")
+    Call<ArrayList<Goods>> callGetPurchase(@Query("paging_idx") int paging_idx);
+
+    @FormUrlEncoded
+    @POST("my_page/remove_purchase.php")
+    Call<Void> callRemovePurchase(@Field("goods_id") int goodsId);
 }

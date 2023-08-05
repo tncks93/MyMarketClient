@@ -27,6 +27,18 @@
         android:gravity="center"
         android:paddingStart="5dp"
         tools:text="디지털기기"/>
+    <ImageButton
+        android:id="@+id/btn_more_item_goods"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_purchase"
+        android:background="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/txt_name_item_goods"
         android:layout_width="250dp"
