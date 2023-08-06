@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.project_bong.mymarket.dto.ChatMessage;
 import com.project_bong.mymarket.dto.ChatRoom;
 import com.project_bong.mymarket.dto.Goods;
+import com.project_bong.mymarket.dto.InterestingGoods;
 import com.project_bong.mymarket.dto.LoginUser;
 import com.project_bong.mymarket.dto.User;
 
@@ -108,4 +109,14 @@ public interface RetrofitInterface {
     @FormUrlEncoded
     @POST("my_page/remove_purchase.php")
     Call<Void> callRemovePurchase(@Field("goods_id") int goodsId);
+
+    @GET("goods/get_is_interest.php")
+    Call<Boolean> callIsInterest(@Query("goods_id") int goodsId);
+
+    @FormUrlEncoded
+    @POST("goods/set_is_interest.php")
+    Call<Boolean> callSetIsInterest(@Field("goods_id") int goods_id);
+
+    @GET("my_page/get_interests.php")
+    Call<ArrayList<InterestingGoods>> callGetInterest(@Query("paging_idx") String pagingIdx);
 }

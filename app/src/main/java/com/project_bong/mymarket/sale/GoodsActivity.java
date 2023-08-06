@@ -37,6 +37,7 @@ public class GoodsActivity extends AppCompatActivity {
     private GoodsImagePagerAdapter imagePagerAdapter;
     private Goods goods;
     private int goodsId;
+    private boolean isInterest = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class GoodsActivity extends AppCompatActivity {
         //구매자 메뉴 클릭리스너 셋
         BuyerBtnClickListener buyerBtnClickListener = new BuyerBtnClickListener();
         binding.btnChatGoods.setOnClickListener(buyerBtnClickListener);
+        binding.btnFavoriteGoods.setOnClickListener(buyerBtnClickListener);
 
 
     }
@@ -101,6 +103,7 @@ public class GoodsActivity extends AppCompatActivity {
                         binding.menuForCustomerGoods.setVisibility(View.GONE);
                         binding.menuForSellerGoods.setVisibility(View.VISIBLE);
                     }else{
+                        getIsInterest(goodsId);
                         binding.menuForCustomerGoods.setVisibility(View.VISIBLE);
                         binding.menuForSellerGoods.setVisibility(View.GONE);
                     }
@@ -120,6 +123,31 @@ public class GoodsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void getIsInterest(int goodsId){
+        RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+        Call<Boolean> callIsInterest = retrofit.callIsInterest(goodsId);
+        callIsInterest.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if(response.body() != null){
+                    isInterest = response.body();
+                    Log.d("isInterest","isInterest : "+isInterest);
+
+                    if(isInterest){
+                        binding.btnFavoriteGoods.setImageDrawable(getDrawable(R.drawable.ic_favorite));
+                    }else{
+                        binding.btnFavoriteGoods.setImageDrawable(getDrawable(R.drawable.ic_not_favorite));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+            }
+        });
     }
 
     @Override
@@ -278,7 +306,7 @@ public class GoodsActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_favorite_goods:
-                    checkFavoriteGoods();
+                    setInterestGoods();
                     break;
 
                 case R.id.btn_chat_goods:
@@ -290,7 +318,37 @@ public class GoodsActivity extends AppCompatActivity {
             }
         }
 
-        private void checkFavoriteGoods(){
+        private void setInterestGoods(){
+            if(isInterest){
+                binding.btnFavoriteGoods.setImageDrawable(getDrawable(R.drawable.ic_not_favorite));
+            }else{
+                binding.btnFavoriteGoods.setImageDrawable(getDrawable(R.drawable.ic_favorite));
+            }
+
+            RetrofitInterface retrofit = RetrofitClientInstance.getRetrofitInstance(getBaseContext()).create(RetrofitInterface.class);
+            Call<Boolean> callSetInterest = retrofit.callSetIsInterest(goodsId);
+            callSetInterest.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    if(response.body() != null) {
+                        isInterest = response.body();
+                        Log.d("isInterest","isInterestChanged : "+isInterest);
+                        String message;
+                        if(isInterest){
+                            message = getString(R.string.str_is_interest);
+                        }else{
+                            message = getString(R.string.str_is_not_interest);
+                        }
+
+                        Toast.makeText(getBaseContext(),message,Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                    RetrofitClientInstance.setOnFailure(getBaseContext(),t);
+                }
+            });
 
         }
 

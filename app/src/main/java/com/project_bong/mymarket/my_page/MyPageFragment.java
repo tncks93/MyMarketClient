@@ -62,6 +62,12 @@ public class MyPageFragment extends Fragment {
             startActivity(intent);
 
         });
+
+        binding.btnInterestGoodsMyPage.setOnClickListener(v->{
+            //관심목록
+            Intent intent = new Intent(getActivity(), InterestListActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void setUserProfile(){
