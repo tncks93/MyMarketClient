@@ -1,11 +1,13 @@
 package com.project_bong.mymarket.my_page;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -23,6 +25,10 @@ import com.project_bong.mymarket.util.CredentialsGetter;
 import com.project_bong.mymarket.util.LoginUserGetter;
 import com.project_bong.mymarket.util.Shared;
 import com.project_bong.mymarket.wallet.NewAccountActivity;
+import com.project_bong.mymarket.wallet.WalletActivity;
+import com.project_bong.mymarket.wallet.WalletPasswordDialog;
+
+import org.web3j.crypto.CipherException;
 
 public class MyPageFragment extends Fragment {
     private FragmentMyPageBinding binding;
@@ -94,6 +100,33 @@ public class MyPageFragment extends Fragment {
             CredentialsGetter credentialsGetter = new CredentialsGetter(getActivity());
             if(credentialsGetter.existWalletFile(walletName)){
                 //비밀번호 입력
+                WalletPasswordDialog passwordDialog = WalletPasswordDialog.newInstance("나의 지갑 보기");
+                passwordDialog.setOnButtonClickListener(new WalletPasswordDialog.OnButtonClickListener() {
+                    @Override
+                    public void onButtonClick() {
+                        //비밀번호 입력 후 확인 버튼 클릭
+                        String password = passwordDialog.getPassword();
+                        if(password.replaceAll(" ","").equals("")){
+                            Toast.makeText(getActivity(),"비밀번호를 입력해 주세요",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        try{
+                            credentialsGetter.loadCredentials(walletName,password);
+                            //walletActivity 실행
+                            Intent intent = new Intent(getActivity(), WalletActivity.class);
+                            intent.putExtra("fileName",walletName);
+                            intent.putExtra("password",password);
+                            startActivity(intent);
+
+                        }catch (CipherException ce){
+                            Toast.makeText(getActivity(),"비밀번호를 확인해 주세요",Toast.LENGTH_SHORT).show();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                passwordDialog.show(getParentFragmentManager(),null);
             }else{
                 //파일 없음
                 Log.d("wallet","walletFile is not exist");

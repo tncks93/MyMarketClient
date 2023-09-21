@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".wallet.WalletActivity">
+    <include layout="@layout/actionbar_default"
+        android:id="@+id/toolbar_wallet"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_wallet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/layout_default_padding_start_end"
+            android:paddingEnd="@dimen/layout_default_padding_start_end"
+            android:paddingTop="50dp"
+            android:paddingBottom="50dp"
+            >
+            <ImageView
+                android:id="@+id/img_qr_public_wallet"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                tools:src="@drawable/user_default"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+
+            <TextView
+                android:id="@+id/txt_my_address_wallet"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                tools:text="0fdsfdfffffffsdssssssssssssssssssssfffffffffffffffffssssssfffffffffff"
+                app:layout_constraintTop_toBottomOf="@id/img_qr_public_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_copy_address"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+            <ImageButton
+                android:id="@+id/btn_copy_address"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/white"
+                android:src="@drawable/ic_copy"
+                app:layout_constraintBottom_toBottomOf="@id/txt_my_address_wallet"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/txt_my_address_wallet"
+                app:layout_constraintTop_toTopOf="@id/txt_my_address_wallet"
+                android:contentDescription="copyAddress"
+                />
+
+
+
+            <TextView
+                android:id="@+id/txt_title_balances_eth_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_my_address_wallet"
+                android:text="ETH 잔액 : "
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/txt_balances_eth_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="0.1213133333333333ETH"
+                app:layout_constraintTop_toTopOf="@id/txt_title_balances_eth_wallet"
+                app:layout_constraintStart_toEndOf="@id/txt_title_balances_eth_wallet"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/txt_title_balances_token_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_title_balances_eth_wallet"
+                android:text="SCT 잔액 : "
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/txt_balances_token_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="0.1213133333333333SCT"
+                app:layout_constraintTop_toTopOf="@id/txt_title_balances_token_wallet"
+                app:layout_constraintStart_toEndOf="@id/txt_title_balances_token_wallet"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+            
+            <TextView
+                android:id="@+id/txt_title_gas_limit_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txt_title_balances_token_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="50dp"
+                android:text="가스 제한"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/txt_gas_limit_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/txt_title_gas_limit_wallet"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="50000"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                />
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider_gas_limit_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txt_title_gas_limit_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:valueFrom="42000"
+                android:valueTo="100000"
+                android:stepSize="1000"
+                android:value="42000"
+                android:contentDescription="gasLimit"
+                />
+            <TextView
+                android:id="@+id/txt_title_gas_price_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가스가격(GWei)"
+                app:layout_constraintTop_toBottomOf="@id/slider_gas_limit_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:id="@+id/txt_gas_price_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="20"
+                app:layout_constraintTop_toTopOf="@id/txt_title_gas_price_wallet"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                />
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider_gas_price_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txt_title_gas_price_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:valueFrom="12"
+                android:valueTo="100"
+                android:stepSize="1"
+                android:value="12"
+                android:contentDescription="gasPrice"
+                />
+            <TextView
+                android:id="@+id/txt_gas_fee_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/slider_gas_price_wallet"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="트랜잭션 수수료 : 0.0000543ETH"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                />
+                <RadioGroup
+                    android:id="@+id/radio_group_purpose_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/txt_gas_fee_wallet"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    >
+                    <RadioButton
+                        android:id="@+id/radio_charge_token_wallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SCT 충전"
+                        />
+                    <RadioButton
+                        android:id="@+id/radio_transfer_token_wallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SCT 전송"
+                        />
+                </RadioGroup>
+                <LinearLayout
+                    android:id="@+id/layout_charge_token_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_purpose_wallet"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+
+                >
+
+                    <EditText
+                        android:id="@+id/edit_amount_to_charge_token_wallet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/outlined_edit_text"
+                        android:hint="충전할 토큰 개수"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+                    <Button
+                        android:id="@+id/btn_charge_token_wallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="충전하기"
+                        android:textSize="20sp"
+                        android:layout_marginTop="10dp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout_transfer_token_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_purpose_wallet"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                >
+                    <EditText
+                        android:id="@+id/edit_recipient_address_wallet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="60dp"
+                        android:background="@drawable/outlined_edit_text"
+                        android:hint="받는 계정 주소"
+                        android:gravity="start"
+                        android:inputType="textMultiLine"
+                        />
+                    <EditText
+                        android:id="@+id/edit_amount_to_transfer_wallet"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/outlined_edit_text"
+                        android:hint="전송할 토큰 개수"/>
+                    <Button
+                        android:id="@+id/btn_transfer_wallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="전송하기"
+                        android:textSize="20sp"
+                        android:layout_marginTop="10dp"/>
+
+                </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progress_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="gone"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
