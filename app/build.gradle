@@ -36,7 +36,7 @@ android {
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     testImplementation 'junit:junit:4.13.2'
@@ -55,8 +55,13 @@ dependencies {
     //fcm
     implementation("com.google.firebase:firebase-messaging:23.2.0")
 
+    //web3j
+    implementation ('org.web3j:core:4.8.7-android')
+
     //etc
     implementation("com.tbuonomo:dotsindicator:4.3")
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'kr.co.prnd:flexiblestep-rangeslider:1.0.0'
+
+
 }

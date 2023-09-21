@@ -19,7 +19,10 @@ import com.bumptech.glide.Glide;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.databinding.FragmentMyPageBinding;
 import com.project_bong.mymarket.dto.LoginUser;
+import com.project_bong.mymarket.util.CredentialsGetter;
 import com.project_bong.mymarket.util.LoginUserGetter;
+import com.project_bong.mymarket.util.Shared;
+import com.project_bong.mymarket.wallet.NewAccountActivity;
 
 public class MyPageFragment extends Fragment {
     private FragmentMyPageBinding binding;
@@ -68,6 +71,40 @@ public class MyPageFragment extends Fragment {
             Intent intent = new Intent(getActivity(), InterestListActivity.class);
             startActivity(intent);
         });
+
+        binding.btnOpenMyWallet.setOnClickListener(v->{
+            //지갑보기
+            openWallet();
+
+        });
+    }
+
+    private void openWallet(){
+        Shared shared = new Shared(getContext(),Shared.WALLET_SOURCE_FILE_NAME);
+        String walletName = shared.getSharedString(Shared.WALLET_NAME_KEY);
+        if(walletName == null){
+            //지갑 없을 때 생성
+            Log.d("wallet","walletName is null");
+            Intent intent = new Intent(getActivity(), NewAccountActivity.class);
+            startActivity(intent);
+            return;
+        }
+        //지갑 있을 때 파일 유무 확인
+        try{
+            CredentialsGetter credentialsGetter = new CredentialsGetter(getActivity());
+            if(credentialsGetter.existWalletFile(walletName)){
+                //비밀번호 입력
+            }else{
+                //파일 없음
+                Log.d("wallet","walletFile is not exist");
+                Intent intent = new Intent(getActivity(), NewAccountActivity.class);
+                startActivity(intent);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d("wallet","walletFile Exception");
+        }
+
     }
 
     private void setUserProfile(){

@@ -9,7 +9,9 @@ public class Shared {
 
     public static final String LOGIN_FILE_NAME = "Login";
     public static final String BOOK_MARK_FILE_NAME = "BookMark";
+    public static final String WALLET_SOURCE_FILE_NAME = "Wallet";
     public static final String LOGIN_KEY = "loginKey";
+    public static final String WALLET_NAME_KEY = "walletName";
 
     public Shared(Context context,String fileName){
         mContext = context;
