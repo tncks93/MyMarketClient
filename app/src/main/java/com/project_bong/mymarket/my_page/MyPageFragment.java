@@ -117,6 +117,7 @@ public class MyPageFragment extends Fragment {
                             intent.putExtra("fileName",walletName);
                             intent.putExtra("password",password);
                             startActivity(intent);
+                            passwordDialog.dismiss();
 
                         }catch (CipherException ce){
                             Toast.makeText(getActivity(),"비밀번호를 확인해 주세요",Toast.LENGTH_SHORT).show();

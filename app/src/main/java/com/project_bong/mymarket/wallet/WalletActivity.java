@@ -1,15 +1,26 @@
 package com.project_bong.mymarket.wallet;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 import com.project_bong.mymarket.R;
 import com.project_bong.mymarket.databinding.ActivityWalletBinding;
 import com.project_bong.mymarket.util.CredentialsGetter;
@@ -41,12 +52,25 @@ public class WalletActivity extends AppCompatActivity {
     private CredentialsGetter crGetter;
     private String fileName;
     private String password;
-//    private ContractGasProvider gasProvider;
+
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if(result.getContents() == null) {
+                    Log.d("wallet","scan 취소");
+                } else {
+                    binding.editRecipientAddressWallet.setText(result.getContents());
+                }
+            });
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityWalletBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbarWallet.toolbarDefault);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        binding.toolbarWallet.toolbarTitle.setText("나의 지갑");
+
         fileName = getIntent().getStringExtra("fileName");
         password = getIntent().getStringExtra("password");
         binding.radioGroupPurposeWallet.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -71,6 +95,19 @@ public class WalletActivity extends AppCompatActivity {
         });
         binding.radioChargeTokenWallet.setChecked(true);
         setGasFee();
+        binding.refreshWallet.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                try{
+                    getEthBalances();
+                    getTokenBalances();
+                    binding.refreshWallet.setRefreshing(false);
+                }catch (Exception e){
+                    e.printStackTrace();
+                    binding.refreshWallet.setRefreshing(false);
+                }
+            }
+        });
         binding.sliderGasLimitWallet.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
@@ -79,6 +116,7 @@ public class WalletActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
+
                 setGasFee();
             }
         });
@@ -90,6 +128,7 @@ public class WalletActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
+
                 setGasFee();
             }
         });
@@ -103,7 +142,7 @@ public class WalletActivity extends AppCompatActivity {
             Log.d("wallet","public : "+ecKeyPair.getPrivateKey().toString(16));
 
             binding.txtMyAddressWallet.setText(crGetter.getCredentials().getAddress());
-
+            setQR();
             getEthBalances();
             getTokenBalances();
         }catch (Exception e){
@@ -125,6 +164,19 @@ public class WalletActivity extends AppCompatActivity {
             }catch (Exception e){
                 e.printStackTrace();
             }
+        });
+
+        binding.btnCopyAddress.setOnClickListener(v->{
+            ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("address",crGetter.getCredentials().getAddress());
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getBaseContext(),"주소가 복사되었습니다",Toast.LENGTH_SHORT).show();
+        });
+
+        binding.btnScanQrCodeWallet.setOnClickListener(v->{
+            ScanOptions options = new ScanOptions();
+            options.setOrientationLocked(false);
+            barcodeLauncher.launch(options);
         });
 
 
@@ -271,6 +323,8 @@ public class WalletActivity extends AppCompatActivity {
     private void setGasFee(){
         float gasLimit = binding.sliderGasLimitWallet.getValue();
         float gasPrice = binding.sliderGasPriceWallet.getValue();
+        binding.txtGasLimitWallet.setText(String.valueOf((int)gasLimit));
+        binding.txtGasPriceWallet.setText(String.valueOf((int)gasPrice));
         Log.d("wallet","gasLimit : "+gasLimit+" gasPrice : "+gasPrice+ " fee : "+gasLimit*gasPrice);
 
         BigDecimal gasFee = new BigDecimal(gasLimit*gasPrice).divide(BigDecimal.TEN.pow(9));
@@ -283,5 +337,23 @@ public class WalletActivity extends AppCompatActivity {
         float gweiPrice = binding.sliderGasPriceWallet.getValue();
         BigInteger gasPrice = Convert.toWei(new BigDecimal(gweiPrice), Convert.Unit.GWEI).toBigInteger();
         return new StaticGasProvider(gasPrice,gasLimit);
+    }
+
+    private void setQR(){
+        try{
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap qrCode = barcodeEncoder.encodeBitmap(crGetter.getCredentials().getAddress(), BarcodeFormat.QR_CODE,400,400);
+            binding.imgQrPublicWallet.setImageBitmap(qrCode);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
